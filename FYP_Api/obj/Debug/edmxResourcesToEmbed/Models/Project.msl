@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="ProjectModelStoreContainer" CdmEntityContainer="ProjectEntities">
+    <EntitySetMapping Name="ACTION_LOGS">
+      <EntityTypeMapping TypeName="ProjectModel.ACTION_LOGS">
+        <MappingFragment StoreEntitySet="ACTION_LOGS">
+          <ScalarProperty Name="action_id" ColumnName="action_id" />
+          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+          <ScalarProperty Name="date" ColumnName="date" />
+          <ScalarProperty Name="act_status" ColumnName="act_status" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ASSIGNSECTORS">
+      <EntityTypeMapping TypeName="ProjectModel.ASSIGNSECTOR">
+        <MappingFragment StoreEntitySet="ASSIGNSECTORS">
+          <ScalarProperty Name="user_id" ColumnName="user_id" />
+          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+          <ScalarProperty Name="ass_id" ColumnName="ass_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CASES_LOGS">
+      <EntityTypeMapping TypeName="ProjectModel.CASES_LOGS">
+        <MappingFragment StoreEntitySet="CASES_LOGS">
+          <ScalarProperty Name="case_id" ColumnName="case_id" />
+          <ScalarProperty Name="user_id" ColumnName="user_id" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="date" ColumnName="date" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="NOTIFICATIONs">
+      <EntityTypeMapping TypeName="ProjectModel.NOTIFICATION">
+        <MappingFragment StoreEntitySet="NOTIFICATIONs">
+          <ScalarProperty Name="notif_id" ColumnName="notif_id" />
+          <ScalarProperty Name="case_id" ColumnName="case_id" />
+          <ScalarProperty Name="type" ColumnName="type" />
+          <ScalarProperty Name="date" ColumnName="date" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SECTORS">
+      <EntityTypeMapping TypeName="ProjectModel.SECTOR">
+        <MappingFragment StoreEntitySet="SECTORS">
+          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+          <ScalarProperty Name="sec_name" ColumnName="sec_name" />
+          <ScalarProperty Name="threshold" ColumnName="threshold" />
+          <ScalarProperty Name="lat_long" ColumnName="lat_long" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="USERs">
+      <EntityTypeMapping TypeName="ProjectModel.USER">
+        <MappingFragment StoreEntitySet="USERs">
+          <ScalarProperty Name="user_id" ColumnName="user_id" />
+          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="email" ColumnName="email" />
+          <ScalarProperty Name="phone_number" ColumnName="phone_number" />
+          <ScalarProperty Name="password" ColumnName="password" />
+          <ScalarProperty Name="role" ColumnName="role" />
+          <ScalarProperty Name="image" ColumnName="image" />
+          <ScalarProperty Name="home_location" ColumnName="home_location" />
+          <ScalarProperty Name="office_location" ColumnName="office_location" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="ACTION_LOGS">
+    <Key>
+      <PropertyRef Name="action_id" />
+    </Key>
+    <Property Name="action_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="sec_id" Type="int" />
+    <Property Name="date" Type="datetime" />
+    <Property Name="act_status" Type="bit" />
+  </EntityType>
+  <EntityType Name="ASSIGNSECTORS">
+    <Key>
+      <PropertyRef Name="ass_id" />
+    </Key>
+    <Property Name="user_id" Type="int" />
+    <Property Name="sec_id" Type="int" />
+    <Property Name="ass_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+  </EntityType>
+  <EntityType Name="CASES_LOGS">
+    <Key>
+      <PropertyRef Name="case_id" />
+    </Key>
+    <Property Name="case_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="user_id" Type="int" />
+    <Property Name="status" Type="bit" />
+    <Property Name="date" Type="datetime" />
+  </EntityType>
+  <EntityType Name="NOTIFICATIONs">
+    <Key>
+      <PropertyRef Name="notif_id" />
+    </Key>
+    <Property Name="notif_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="case_id" Type="int" />
+    <Property Name="type" Type="bit" />
+    <Property Name="date" Type="datetime" />
+  </EntityType>
+  <EntityType Name="SECTORS">
+    <Key>
+      <PropertyRef Name="sec_id" />
+    </Key>
+    <Property Name="sec_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="sec_name" Type="varchar" MaxLength="20" />
+    <Property Name="threshold" Type="bigint" />
+    <Property Name="lat_long" Type="varchar(max)" />
+  </EntityType>
+  <EntityType Name="USERs">
+    <Key>
+      <PropertyRef Name="user_id" />
+    </Key>
+    <Property Name="user_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="sec_id" Type="int" />
+    <Property Name="name" Type="varchar" MaxLength="20" />
+    <Property Name="email" Type="varchar" MaxLength="40" />
+    <Property Name="phone_number" Type="varchar" MaxLength="20" />
+    <Property Name="password" Type="varchar" MaxLength="20" />
+    <Property Name="role" Type="varchar" MaxLength="10" />
+    <Property Name="image" Type="varchar(max)" />
+    <Property Name="home_location" Type="varchar(max)" />
+    <Property Name="office_location" Type="varchar(max)" />
+  </EntityType>
+  <EntityContainer Name="ProjectModelStoreContainer">
+    <EntitySet Name="ACTION_LOGS" EntityType="Self.ACTION_LOGS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ASSIGNSECTORS" EntityType="Self.ASSIGNSECTORS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="CASES_LOGS" EntityType="Self.CASES_LOGS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="NOTIFICATIONs" EntityType="Self.NOTIFICATIONs" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="SECTORS" EntityType="Self.SECTORS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="USERs" EntityType="Self.USERs" Schema="dbo" store:Type="Tables" />
+  </EntityContainer>
+</Schema>

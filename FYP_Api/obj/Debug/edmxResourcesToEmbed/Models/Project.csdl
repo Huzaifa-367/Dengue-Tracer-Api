@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ProjectModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="ACTION_LOGS">
+    <Key>
+      <PropertyRef Name="action_id" />
+    </Key>
+    <Property Name="action_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="sec_id" Type="Int32" />
+    <Property Name="date" Type="DateTime" Precision="3" />
+    <Property Name="act_status" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="ASSIGNSECTOR">
+    <Key>
+      <PropertyRef Name="ass_id" />
+    </Key>
+    <Property Name="user_id" Type="Int32" />
+    <Property Name="sec_id" Type="Int32" />
+    <Property Name="ass_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+  </EntityType>
+  <EntityType Name="CASES_LOGS">
+    <Key>
+      <PropertyRef Name="case_id" />
+    </Key>
+    <Property Name="case_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="user_id" Type="Int32" />
+    <Property Name="status" Type="Boolean" />
+    <Property Name="date" Type="DateTime" Precision="3" />
+  </EntityType>
+  <EntityType Name="NOTIFICATION">
+    <Key>
+      <PropertyRef Name="notif_id" />
+    </Key>
+    <Property Name="notif_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="case_id" Type="Int32" />
+    <Property Name="type" Type="Boolean" />
+    <Property Name="date" Type="DateTime" Precision="3" />
+  </EntityType>
+  <EntityType Name="SECTOR">
+    <Key>
+      <PropertyRef Name="sec_id" />
+    </Key>
+    <Property Name="sec_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="sec_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="threshold" Type="Int64" />
+    <Property Name="lat_long" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="USER">
+    <Key>
+      <PropertyRef Name="user_id" />
+    </Key>
+    <Property Name="user_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="sec_id" Type="Int32" />
+    <Property Name="name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="email" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="phone_number" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="password" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="role" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="image" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="home_location" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="office_location" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityContainer Name="ProjectEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="ACTION_LOGS" EntityType="Self.ACTION_LOGS" />
+    <EntitySet Name="ASSIGNSECTORS" EntityType="Self.ASSIGNSECTOR" />
+    <EntitySet Name="CASES_LOGS" EntityType="Self.CASES_LOGS" />
+    <EntitySet Name="NOTIFICATIONs" EntityType="Self.NOTIFICATION" />
+    <EntitySet Name="SECTORS" EntityType="Self.SECTOR" />
+    <EntitySet Name="USERs" EntityType="Self.USER" />
+  </EntityContainer>
+</Schema>
