@@ -69,8 +69,8 @@ namespace FYP_Api.Controllers
 
                 int id = int.Parse(request["user_id"]);
                 string extension = imagefile.FileName.Split('.')[1];
-                DateTime dt = DateTime.Now;
-                string filename = id + "_" + dt.Year + dt.Month + dt.Day + dt.Minute + dt.Second + dt.Hour + "." + extension;
+               // DateTime dt = DateTime.Now;
+                string filename = id + "." + extension;
                 // filename = filename + DateTime.Now.ToShortTimeString()+"."+extension;
                 imagefile.SaveAs(HttpContext.Current.Server.
                                MapPath("~/Images/" + filename));
