@@ -99,7 +99,8 @@ namespace FYP_Api.Controllers
                 var user = db.CASES_LOGS.Where(s => s.user_id == user_id).FirstOrDefault();
                 if (user == null)
                 {
-                    DateTime dt = DateTime.Now;
+                    DateTime dat = DateTime.Now;
+                    var dt = dat.Date;
                     var date = dt.Year + "-" + dt.Month + "-" + dt.Day;
                     //int range = 5;
                     //-------------------------------------------------
@@ -198,6 +199,33 @@ namespace FYP_Api.Controllers
         }
 
         //----------------------------------------------------------------------------//
+
+
+
+        [HttpGet]
+        public HttpResponseMessage GetDengueCasesByDate()
+        {
+            try
+            {
+                var lst = db.USERs.Where(u => u.role == "user");
+                var result = from u in lst
+                             join c in db.CASES_LOGS on u.user_id equals c.user_id
+                             join s in db.SECTORS on u.sec_id equals s.sec_id
+                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.sec_id, s.sec_name, c.startdate, c.status };
+
+                var casesByDate = result
+                    .GroupBy(c => c.startdate) // Group cases by date
+                    .Select(g => new { Date = g.Key, Count = g.Count() }) // Project to date and count
+                    .OrderBy(d => d.Date); // Order by date
+
+                return Request.CreateResponse(HttpStatusCode.OK, casesByDate);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
 
         [HttpGet]
         public HttpResponseMessage GetDengueUsers()

@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="ACTION_LOGS">
           <Key>
             <PropertyRef Name="action_id" />
@@ -29,8 +29,8 @@
           <Property Name="case_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="user_id" Type="int" />
           <Property Name="status" Type="bit" />
-          <Property Name="startdate" Type="datetime" />
-          <Property Name="enddate" Type="datetime" />
+          <Property Name="startdate" Type="date" />
+          <Property Name="enddate" Type="date" />
         </EntityType>
         <EntityType Name="NOTIFICATIONs">
           <Key>
@@ -73,8 +73,7 @@
           <EntitySet Name="SECTORS" EntityType="Self.SECTORS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="USERs" EntityType="Self.USERs" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ProjectModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -102,8 +101,8 @@
           <Property Name="case_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="user_id" Type="Int32" />
           <Property Name="status" Type="Boolean" />
-          <Property Name="startdate" Type="DateTime" Precision="3" />
-          <Property Name="enddate" Type="DateTime" Precision="3" />
+          <Property Name="startdate" Type="DateTime" Precision="0" />
+          <Property Name="enddate" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="NOTIFICATION">
           <Key>

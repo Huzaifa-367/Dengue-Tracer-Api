@@ -24,8 +24,8 @@
     <Property Name="case_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="user_id" Type="Int32" />
     <Property Name="status" Type="Boolean" />
-    <Property Name="startdate" Type="DateTime" Precision="3" />
-    <Property Name="enddate" Type="DateTime" Precision="3" />
+    <Property Name="startdate" Type="DateTime" Precision="0" />
+    <Property Name="enddate" Type="DateTime" Precision="0" />
   </EntityType>
   <EntityType Name="NOTIFICATION">
     <Key>
