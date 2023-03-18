@@ -17,6 +17,7 @@ namespace FYP_Api.Models
         public int case_id { get; set; }
         public Nullable<int> user_id { get; set; }
         public Nullable<bool> status { get; set; }
-        public Nullable<System.DateTime> date { get; set; }
+        public Nullable<System.DateTime> startdate { get; set; }
+        public Nullable<System.DateTime> enddate { get; set; }
     }
 }

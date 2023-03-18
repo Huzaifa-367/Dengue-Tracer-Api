@@ -224,9 +224,10 @@
     <Content Include="Global.asax" />
     <Content Include="Models\Project.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Project.Context.cs</LastGenOutput>
       <DependentUpon>Project.edmx</DependentUpon>
+      <LastGenOutput>Project.Context.cs</LastGenOutput>
     </Content>
+    <Content Include="Models\Project.edmx.sql" />
     <Content Include="Models\Project.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Project.edmx</DependentUpon>

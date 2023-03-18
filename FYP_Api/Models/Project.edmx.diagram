@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="4e5e7434be1545bbbae0ea19202f8f0d" Name="Diagram1">
+      <Diagram DiagramId="3c807ddb74aa492e94cd8af838e19414" Name="Diagram1">
         <EntityTypeShape EntityType="ProjectModel.ACTION_LOGS" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ProjectModel.ASSIGNSECTOR" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ProjectModel.CASES_LOGS" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />

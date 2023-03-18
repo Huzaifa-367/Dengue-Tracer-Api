@@ -26,7 +26,8 @@
           <ScalarProperty Name="case_id" ColumnName="case_id" />
           <ScalarProperty Name="user_id" ColumnName="user_id" />
           <ScalarProperty Name="status" ColumnName="status" />
-          <ScalarProperty Name="date" ColumnName="date" />
+          <ScalarProperty Name="startdate" ColumnName="startdate" />
+          <ScalarProperty Name="enddate" ColumnName="enddate" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

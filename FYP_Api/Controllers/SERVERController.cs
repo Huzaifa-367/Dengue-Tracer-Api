@@ -101,13 +101,13 @@ namespace FYP_Api.Controllers
                 {
                     DateTime dt = DateTime.Now;
                     var date = dt.Year + "-" + dt.Month + "-" + dt.Day;
-                    int range = 5;
+                    //int range = 5;
                     //-------------------------------------------------
                     CASES_LOGS newCase = new CASES_LOGS();
 
                     newCase.user_id = user_id;
-                    newCase.status = status;
-                    newCase.date = DateTime.Parse(date);
+                    newCase.status = status;                    
+                    newCase.startdate = DateTime.Parse(date);
                     //newCase.range = range;
                     db.CASES_LOGS.Add(newCase);
                     db.SaveChanges();
@@ -117,15 +117,6 @@ namespace FYP_Api.Controllers
                 user.status = status;
                 db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.OK, "Updated");
-                // Create a new instance of the Cases model
-
-
-                // Assign the values of the parameters to the corresponding properties of the Cases model
-
-
-                // Insert the new case into the Cases table
-
-
 
             }
             catch (Exception ex)
@@ -219,7 +210,7 @@ namespace FYP_Api.Controllers
                 var result = from u in lst
                              join c in db.CASES_LOGS on u.user_id equals c.user_id
                              join s in db.SECTORS on u.sec_id equals s.sec_id
-                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, u.sec_id, s.sec_name, s.lat_long, c.date, c.status };
+                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, u.sec_id, s.sec_name, s.lat_long, c.startdate, c.status, c.enddate };
 
 
                 /*     foreach(var item in lst)
