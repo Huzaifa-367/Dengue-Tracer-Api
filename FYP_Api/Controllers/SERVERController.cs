@@ -1,6 +1,9 @@
 ﻿using FYP_Api.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -100,15 +103,15 @@ namespace FYP_Api.Controllers
                 if (user == null)
                 {
                     DateTime dat = DateTime.Now;
-                    var dt = dat.Date;
-                    var date = dt.Year + "-" + dt.Month + "-" + dt.Day;
+                    var dt = dat.Date.ToShortDateString();
+                 
                     //int range = 5;
                     //-------------------------------------------------
                     CASES_LOGS newCase = new CASES_LOGS();
 
                     newCase.user_id = user_id;
                     newCase.status = status;                    
-                    newCase.startdate = DateTime.Parse(date);
+                    newCase.startdate = DateTime.Parse(dt);
                     //newCase.range = range;
                     db.CASES_LOGS.Add(newCase);
                     db.SaveChanges();
@@ -223,6 +226,101 @@ namespace FYP_Api.Controllers
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
+
+        [HttpGet]
+        public HttpResponseMessage GetDengueCasesByMonth()
+        {
+            try
+            {
+                var lst = db.USERs.Where(u => u.role == "user").ToList();
+                var result = from u in lst
+                             join c in db.CASES_LOGS on u.user_id equals c.user_id
+                             join s in db.SECTORS on u.sec_id equals s.sec_id
+                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.sec_id, s.sec_name, c.startdate, c.status };
+
+                var casesByMonth = result
+                    .GroupBy(c => new { Year = c.startdate.HasValue ? c.startdate.Value.Year : (int?)null, Month = c.startdate.HasValue ? c.startdate.Value.Month : (int?)null })
+                    .Select(g => new { Month = $"{g.Key.Year}-{g.Key.Month:D2}", Count = g.Count() })
+                    .OrderBy(d => d.Month);
+
+                return Request.CreateResponse(HttpStatusCode.OK, casesByMonth);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage GetDengueCasesByYear()
+        {
+            try
+            {
+                var lst = db.USERs.Where(u => u.role == "user").ToList();
+                var result = from u in lst
+                             join c in db.CASES_LOGS on u.user_id equals c.user_id
+                             join s in db.SECTORS on u.sec_id equals s.sec_id
+                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.sec_id, s.sec_name, c.startdate, c.status };
+
+                var casesByYear = result
+                                  .GroupBy(c => new { Year = c.startdate.HasValue ? c.startdate.Value.Year : (int?)null })
+                                  .Select(g => new { Year = g.Key.Year.ToString(), Count = g.Count() })
+                                  .OrderBy(d => d.Year);
+
+                return Request.CreateResponse(HttpStatusCode.OK, casesByYear);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
+        [HttpGet]
+        public HttpResponseMessage GetDengueUsersByDate(int daysToSubtract)
+        {
+            try
+            {
+                var targetDate = DateTime.Today.AddDays(-daysToSubtract);
+                var lst = db.USERs.Where(u => u.role == "user");
+                var result = from u in lst
+                             join c in db.CASES_LOGS on u.user_id equals c.user_id
+                             join s in db.SECTORS on u.sec_id equals s.sec_id
+                             where c.startdate == targetDate
+                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, u.sec_id, s.sec_name, s.lat_long, c.startdate, c.status, c.enddate };
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
+        [HttpGet]
+        public IHttpActionResult GetDengueCasesByDateRange(string from, string to)
+        {
+            try
+            {
+                DateTime fromDate = DateTime.ParseExact(from, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime toDate = DateTime.ParseExact(to, "yyyy-MM-dd", CultureInfo.InvariantCulture).AddDays(1);
+
+                var casesInRange = db.CASES_LOGS
+                    .Where(c => c.startdate.HasValue && c.startdate.Value >= fromDate && c.startdate.Value < toDate)
+                    .GroupBy(c => DbFunctions.TruncateTime(c.startdate))
+                    .Select(g => new { Date = g.Key, Count = g.Count() })
+                    .OrderBy(d => d.Date);
+
+                return Ok(casesInRange);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
 
