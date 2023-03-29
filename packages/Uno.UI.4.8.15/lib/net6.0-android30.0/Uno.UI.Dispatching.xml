@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Uno.UI.Dispatching</name>
+    </assembly>
+    <members>
+        <member name="T:Uno.UI.Dispatching.CoreDispatcher">
+             <summary>
+             Defines a priority-based UI Thread scheduler.
+             </summary>
+             <remarks>
+             This implementation is based on the fact that the native queue will
+             only contain one instance of the callback for the current core dispatcher.
+            
+             This gives the native events, such as touch, the priority over managed-side queued
+             events, and will allow a properly prioritized processing of idle events.
+             </remarks>
+        </member>
+        <member name="P:Uno.UI.Dispatching.CoreDispatcher.Main">
+            <summary>
+            Gets the dispatcher for the main thread.
+            </summary>
+        </member>
+        <member name="F:Uno.UI.Dispatching.CoreDispatcher._queues">
+            <summary>
+            Defines a set of queues based on the number of priorities defined in <see cref="T:Uno.UI.Dispatching.CoreDispatcherPriority"/>.
+            </summary>
+        </member>
+        <member name="M:Uno.UI.Dispatching.CoreDispatcher.CheckThreadAccess">
+            <summary>
+            Enforce access on the UI thread.
+            </summary>
+        </member>
+        <member name="E:Uno.UI.Dispatching.CoreDispatcher.Rendering">
+            <summary>
+            Backs the CompositionTarget.Rendering event for WebAssembly.
+            </summary>
+        </member>
+        <member name="P:Uno.UI.Dispatching.CoreDispatcher.HasThreadAccess">
+            <summary>
+            Determines if the current thread has access to this CoreDispatcher.
+            </summary>
+        </member>
+        <member name="P:Uno.UI.Dispatching.CoreDispatcher.CurrentPriority">
+            <summary>
+            Gets the priority of the current task.
+            </summary>
+            <remarks>Sets has no effect on Uno</remarks>
+        </member>
+        <member name="P:Uno.UI.Dispatching.CoreDispatcher.IsQueueIdle">
+            <summary>
+            Determines if there are no elements in queues other than the idle one.
+            </summary>
+        </member>
+        <member name="M:Uno.UI.Dispatching.CoreDispatcher.RunAsync(Uno.UI.Dispatching.CoreDispatcherPriority,Uno.UI.Dispatching.DispatchedHandler)">
+            <summary>
+            Schedules the provided handler on the dispatcher.
+            </summary>
+            <param name="priority">The execution priority for the handler</param>
+            <param name="handler">The handler to execute</param>
+            <returns>An async operation for the scheduled handler.</returns>
+        </member>
+        <member name="M:Uno.UI.Dispatching.CoreDispatcher.RunAsync(Uno.UI.Dispatching.CoreDispatcherPriority,Uno.UI.Dispatching.CancellableDispatchedHandler)">
+            <summary>
+            Schedules the provided handler on the dispatcher.
+            </summary>
+            <param name="priority">The execution priority for the handler</param>
+            <param name="handler">The handler to execute</param>
+            <returns>An async operation for the scheduled handler.</returns>
+            <remarks>Can only be invoked on the UI thread</remarks>
+        </member>
+        <member name="M:Uno.UI.Dispatching.CoreDispatcher.RunIdleAsync(Uno.UI.Dispatching.IdleDispatchedHandler)">
+            <summary>
+            Schedules the provided handler using the idle priority
+            </summary>
+            <param name="handler">The handler to execute</param>
+            <returns>An async operation for the scheduled handler.</returns>
+        </member>
+        <member name="M:Uno.UI.Dispatching.CoreDispatcher.EnqueueNative">
+            <summary>
+            Enqueues a operation on the native UI Thread.
+            </summary>
+        </member>
+        <member name="M:Uno.UI.Dispatching.CoreDispatcher.InvokeOperationSafe(Uno.UI.Dispatching.UIAsyncOperation)">
+            <remarks>
+            This method contains or is called by a try/catch containing method and
+            can be significantly slower than other methods as a result on WebAssembly.
+            See https://github.com/dotnet/runtime/issues/56309
+            </remarks>
+        </member>
+        <member name="M:Uno.UI.Dispatching.CoreDispatcher.InvokeOperation(Uno.UI.Dispatching.UIAsyncOperation)">
+            <remarks>
+            This method contains or is called by a try/catch containing method and
+            can be significantly slower than other methods as a result on WebAssembly.
+            See https://github.com/dotnet/runtime/issues/56309
+            </remarks>
+        </member>
+        <member name="M:Uno.UI.Dispatching.CoreDispatcher.WakeUp">
+            <summary>
+            Wakes up the dispatcher.
+            </summary>
+        </member>
+        <member name="F:Uno.UI.Dispatching.CoreDispatcher.MaxRenderSpan">
+            <summary>
+            Defines the maximum time for which the queue can be processed. We're assuming 2/3rd 
+            of 60fps, to leave room for other operartions to be computed.
+            </summary>
+        </member>
+        <member name="M:Uno.UI.Dispatching.CoreDispatcher.RunAnimation(Uno.UI.Dispatching.DispatchedHandler)">
+            <summary>
+            Run operation with 'animation' priority, prior to layout and draw calls. This will run at the beginning of the next UI pass.
+            </summary>
+        </member>
+        <member name="T:Uno.UI.Dispatching.CoreDispatcher.CoreDispatcherImplementor">
+            <summary>
+            An internal implementation of an IRunnable. Used to avoid creating new Java objects for every single action 
+            performed on the UI Thread.
+            </summary>
+        </member>
+        <member name="T:Uno.UI.Dispatching.CoreDispatcherSynchronizationContext">
+            <summary>
+            Provides a CoreDispatched Synchronization context, to allow for async methods to keep the dispatcher priority.
+            </summary>
+        </member>
+        <member name="M:Uno.UI.Dispatching.CoreDispatcherSynchronizationContext.Apply">
+            <summary>
+            Creates a scoped assignment of <see cref="P:System.Threading.SynchronizationContext.Current"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Uno.UI.Dispatching.IdleDispatchedHandlerArgs.IsDispatcherIdle">
+            <summary>
+            Determines if the dispatcher is currently idle
+            </summary>
+        </member>
+        <member name="M:Uno.UI.Dispatching.UIAsyncOperation.#ctor(Uno.UI.Dispatching.DispatchedHandler,Uno.Diagnostics.Eventing.EventActivity)">
+            <summary>
+            Creates a <see cref="T:Uno.UI.Dispatching.UIAsyncOperation"/> using the provided handler.
+            </summary>
+            <param name="action">A handler</param>
+            <param name="scheduleActivity">An ID that defines the activity being scheduled, used for tracing.</param>
+        </member>
+        <member name="M:Uno.UI.Dispatching.UIAsyncOperation.AsTask">
+            <summary>
+            Provides a task the current operation
+            </summary>
+            <returns>A task representing the current operation</returns>
+        </member>
+        <member name="M:Uno.UI.Dispatching.UIAsyncOperation.AsTask(System.Threading.CancellationToken)">
+            <summary>
+            Provides a task the current operation
+            </summary>
+            <param name="ct">A cancellation token</param>
+            <returns>A task representing the current operation</returns>
+        </member>
+        <member name="M:Uno.UI.Dispatching.UIAsyncOperation.Complete">
+            <summary>
+            Sets the current operation as complete.
+            </summary>
+        </member>
+    </members>
+</doc>

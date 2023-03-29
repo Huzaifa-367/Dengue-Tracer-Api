@@ -1,8 +1,6 @@
 ﻿using FYP_Api.Models;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -11,7 +9,6 @@ using System.Net.Mail;
 using System.Text;
 using System.Web;
 using System.Web.Http;
-using static System.Collections.Specialized.BitVector32;
 
 namespace FYP_Api.Controllers
 {
@@ -68,11 +65,11 @@ namespace FYP_Api.Controllers
             {
                 HttpRequest request = HttpContext.Current.Request;
                 HttpPostedFile imagefile = request.Files["image"];
-                
+
 
                 int id = int.Parse(request["user_id"]);
                 string extension = imagefile.FileName.Split('.')[1];
-               // DateTime dt = DateTime.Now;
+                // DateTime dt = DateTime.Now;
                 string filename = id + "." + extension;
                 // filename = filename + DateTime.Now.ToShortTimeString()+"."+extension;
                 imagefile.SaveAs(HttpContext.Current.Server.
@@ -104,13 +101,13 @@ namespace FYP_Api.Controllers
                 {
                     DateTime dat = DateTime.Now;
                     var dt = dat.Date.ToShortDateString();
-                 
+
                     //int range = 5;
                     //-------------------------------------------------
                     CASES_LOGS newCase = new CASES_LOGS();
 
                     newCase.user_id = user_id;
-                    newCase.status = status;                    
+                    newCase.status = status;
                     newCase.startdate = DateTime.Parse(dt);
                     //newCase.range = range;
                     db.CASES_LOGS.Add(newCase);
@@ -130,6 +127,83 @@ namespace FYP_Api.Controllers
             }
         }
 
+
+        [HttpPost]
+        public HttpResponseMessage CreateNotification(int case_id, bool status)
+        {
+            try
+            {
+                var user = db.CASES_LOGS.Where(s => s.case_id == case_id).FirstOrDefault();
+                if (user == null)
+                {
+                    DateTime dat = DateTime.Now;
+                    var dt = dat.Date.ToShortDateString();
+
+                    NOTIFICATION newCase = new NOTIFICATION();
+
+                    newCase.case_id = case_id;
+                    newCase.type = false;
+                    newCase.title = "New case in your area";
+                    newCase.date = DateTime.Parse(dt);
+
+                    db.NOTIFICATIONs.Add(newCase);
+                    db.SaveChanges();
+
+                    //// Show a notification for the new case
+                    //string notificationText = "New case registered";
+                    //ShowNotification(notificationText);
+
+                    return Request.CreateResponse(HttpStatusCode.OK, newCase);
+                }
+
+                user.status = status;
+                db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.OK, "Updated");
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage ShowallNotifications()
+        {
+            try
+            {
+                var lst = db.NOTIFICATIONs.OrderByDescending(n => n.date).ToList();
+                return Request.CreateResponse(HttpStatusCode.OK, lst);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
+        //private void ShowNotification(string text)
+        //{
+        //    // Create the notification
+        //    ToastNotification notification = new ToastNotification(CreateToastXml(text));
+
+        //    // Show the notification
+        //    ToastNotificationManager.CreateToastNotifier().Show(notification);
+        //}
+
+        //private XmlDocument CreateToastXml(string text)
+        //{
+        //    // Create the toast XML document
+        //    XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
+
+        //    // Set the text of the toast
+        //    XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
+        //    toastTextElements[0].InnerText = text;
+
+        //    return toastXml;
+        //}
+
+
         [HttpGet]
 
         public HttpResponseMessage UpdatePassword(string email, string newpassword)
@@ -140,14 +214,14 @@ namespace FYP_Api.Controllers
                 var user = db.USERs.Where(s => s.email == email).FirstOrDefault();
                 if (user != null)
                 {
-                  
+
                     user.password = newpassword;
 
                     db.SaveChanges();
-                   // return Request.CreateResponse(HttpStatusCode.OK, newpass);
+                    // return Request.CreateResponse(HttpStatusCode.OK, newpass);
 
                 }
-           
+
                 return Request.CreateResponse(HttpStatusCode.OK, "Updated");
 
 
@@ -435,20 +509,21 @@ namespace FYP_Api.Controllers
         [HttpGet]
         public HttpResponseMessage ResetPassword(string email)
         {
-            try { 
-            // check if the email is valid
-            if (!IsValidEmail(email))
+            try
             {
-                throw new ArgumentException("Invalid email address.");
-            }
+                // check if the email is valid
+                if (!IsValidEmail(email))
+                {
+                    throw new ArgumentException("Invalid email address.");
+                }
 
-            // generate random OTP
-            string otp = GenerateOTP();
+                // generate random OTP
+                string otp = GenerateOTP();
 
-            // send email with OTP to the user
-            SendEmail(email, otp);
+                // send email with OTP to the user
+                SendEmail(email, otp);
 
-           
+
                 return Request.CreateResponse(HttpStatusCode.OK, otp);
             }
             catch (Exception ex)
@@ -541,6 +616,7 @@ namespace FYP_Api.Controllers
                 HttpRequest request = HttpContext.Current.Request;
                 string name = request["sec_name"];
                 string lat_long = request["lat_long"];
+                string threshold = request["threshold"];
                 SECTOR sect = db.SECTORS.Where(s => s.sec_name == name && s.lat_long == lat_long).FirstOrDefault();
                 if (sect != null)
                 {
@@ -549,6 +625,7 @@ namespace FYP_Api.Controllers
                 SECTOR newsector = new SECTOR
                 {
                     sec_name = name,
+                    threshold = int.Parse(threshold),
                     lat_long = lat_long,
                 };
                 _ = db.SECTORS.Add(newsector);
@@ -560,6 +637,9 @@ namespace FYP_Api.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+
+
 
         //----------------------------------------------------------------------------//
 

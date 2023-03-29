@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Uno.UI.Composition</name>
+    </assembly>
+    <members>
+        <member name="T:Windows.UI.Composition.CompositionBatchTypes">
+            <summary>
+            Batch types for CompositionCommitBatch and CompositionScopedBatch.
+            </summary>
+        </member>
+        <member name="F:Windows.UI.Composition.CompositionBatchTypes.None">
+            <summary>
+            None.
+            </summary>
+        </member>
+        <member name="F:Windows.UI.Composition.CompositionBatchTypes.Animation">
+            <summary>
+            The batch contains animations.
+            </summary>
+        </member>
+        <member name="F:Windows.UI.Composition.CompositionBatchTypes.Effect">
+            <summary>
+            The batch contains effects.
+            </summary>
+        </member>
+        <member name="F:Windows.UI.Composition.CompositionBatchTypes.InfiniteAnimation">
+            <summary>
+            The batch contains an infinite animation.
+            </summary>
+        </member>
+        <member name="F:Windows.UI.Composition.CompositionBatchTypes.AllAnimations">
+            <summary>
+            The batch contains all animations.
+            </summary>
+        </member>
+        <member name="T:Windows.UI.Composition.RectangleClip">
+            <summary>
+            Represents a rectangle with optional rounded corners that clips a portion of a visual.
+            The portion of the visual inside the rectangle is visible; the portion of the visual outside the rectangle is clipped.
+            </summary>
+        </member>
+        <member name="P:Windows.UI.Composition.RectangleClip.Left">
+            <summary>
+            Gets or sets the offset from the left of the visual. The portion of the visual
+            to the left of the edge defined by Left will be clipped. Animatable.
+            </summary>
+        </member>
+        <member name="P:Windows.UI.Composition.RectangleClip.Top">
+            <summary>
+            Gets or sets the offset from the top of the visual. The portion of the visual above
+            the edge defined by Top will be clipped. Animatable.
+            </summary>
+        </member>
+        <member name="P:Windows.UI.Composition.RectangleClip.Right">
+            <summary>
+            Gets or sets the offset from the right of the visual. The portion of the visual
+            to the right the edge defined by Right will be clipped. Animatable.
+            </summary>
+        </member>
+        <member name="P:Windows.UI.Composition.RectangleClip.Bottom">
+            <summary>
+            Gets or sets the offset from the bottom of the visual. The portion of the visual
+            below the edge defined by Bottom will be clipped. Animatable.
+            </summary>
+        </member>
+        <member name="P:Windows.UI.Composition.RectangleClip.TopLeftRadius">
+            <summary>
+            Gets or sets the amount by which the top left corner of the rectangle is rounded.
+            </summary>
+        </member>
+        <member name="P:Windows.UI.Composition.RectangleClip.TopRightRadius">
+            <summary>
+            Gets or sets the amount by which the top right corner of the rectangle is rounded.
+            </summary>
+        </member>
+        <member name="P:Windows.UI.Composition.RectangleClip.BottomRightRadius">
+            <summary>
+            Gets or sets the amount by which the bottom right corner of the rectangle is rounded.
+            </summary>
+        </member>
+        <member name="P:Windows.UI.Composition.RectangleClip.BottomLeftRadius">
+            <summary>
+            Gets or sets the amount by which the top right corner of the rectangle is rounded.
+            </summary>
+        </member>
+        <member name="P:Uno.CompositionConfiguration.Configuration">
+            <summary>
+            Configures the composition options for the whole application.
+            Refer to uno's documentation to get more info about capabilities and impacts of composition for each platform.
+            </summary>
+            <remarks>
+            Due to the nature of the core feature of composition, this flag must be set as soon as possible in your application startup.
+            Changing configuration while the application is already running will result to an undefined behavior.
+            </remarks>
+        </member>
+        <member name="F:Uno.CompositionConfiguration.Options.Disabled">
+            <summary>
+            Disables all composition supports in the application.
+            </summary>
+        </member>
+        <member name="F:Uno.CompositionConfiguration.Options.UseCompositorThread">
+            <summary>
+            [ANDROID ONLY] Use a dedicated background thread to render the views.
+            </summary>
+        </member>
+        <member name="F:Uno.CompositionConfiguration.Options.Enabled">
+            <summary>
+            Enables all composition capabilities for the current platform.
+            </summary>
+        </member>
+    </members>
+</doc>

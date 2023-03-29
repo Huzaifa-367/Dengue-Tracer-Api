@@ -35,6 +35,7 @@
     <Property Name="case_id" Type="Int32" />
     <Property Name="type" Type="Boolean" />
     <Property Name="date" Type="DateTime" Precision="3" />
+    <Property Name="title" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
   </EntityType>
   <EntityType Name="SECTOR">
     <Key>
@@ -42,8 +43,8 @@
     </Key>
     <Property Name="sec_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="sec_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-    <Property Name="threshold" Type="Int64" />
-    <Property Name="lat_long" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+    <Property Name="threshold" Type="Int32" />
+    <Property Name="lat_long" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
   </EntityType>
   <EntityType Name="USER">
     <Key>

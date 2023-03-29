@@ -33,6 +33,7 @@
     </Key>
     <Property Name="notif_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="case_id" Type="int" />
+    <Property Name="title" Type="varchar" MaxLength="30" />
     <Property Name="type" Type="bit" />
     <Property Name="date" Type="datetime" />
   </EntityType>
@@ -42,7 +43,7 @@
     </Key>
     <Property Name="sec_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="sec_name" Type="varchar" MaxLength="20" />
-    <Property Name="threshold" Type="bigint" />
+    <Property Name="threshold" Type="int" />
     <Property Name="lat_long" Type="varchar(max)" />
   </EntityType>
   <EntityType Name="USERs">
