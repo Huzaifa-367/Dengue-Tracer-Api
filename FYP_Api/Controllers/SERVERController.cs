@@ -294,8 +294,8 @@ namespace FYP_Api.Controllers
                     .GroupBy(c => c.startdate) // Group cases by date
                     .Select(g => new { Date = g.Key, Count = g.Count() }) // Project to date and count
                     .OrderBy(d => d.Date); // Order by date
-
-                return Request.CreateResponse(HttpStatusCode.OK, casesByDate);
+               // var cases = casesByDate.OrderByDescending(n=> n.Date);
+                return Request.CreateResponse(HttpStatusCode.OK, casesByDate.OrderByDescending(n => n.Date));
             }
             catch (Exception ex)
             {
@@ -321,7 +321,7 @@ namespace FYP_Api.Controllers
                     .Select(g => new { Month = $"{g.Key.Year}-{g.Key.Month:D2}", Count = g.Count() })
                     .OrderBy(d => d.Month);
 
-                return Request.CreateResponse(HttpStatusCode.OK, casesByMonth);
+                return Request.CreateResponse(HttpStatusCode.OK, casesByMonth.OrderByDescending(n => n.Month));
             }
             catch (Exception ex)
             {
@@ -345,7 +345,7 @@ namespace FYP_Api.Controllers
                                   .Select(g => new { Year = g.Key.Year.ToString(), Count = g.Count() })
                                   .OrderBy(d => d.Year);
 
-                return Request.CreateResponse(HttpStatusCode.OK, casesByYear);
+                return Request.CreateResponse(HttpStatusCode.OK, casesByYear.OrderByDescending(n => n.Year));
             }
             catch (Exception ex)
             {
@@ -367,7 +367,7 @@ namespace FYP_Api.Controllers
                              where c.startdate == targetDate
                              select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, u.sec_id, s.sec_name, s.lat_long, c.startdate, c.status, c.enddate };
 
-                return Request.CreateResponse(HttpStatusCode.OK, result);
+                return Request.CreateResponse(HttpStatusCode.OK, result.OrderByDescending(n => n.startdate));
             }
             catch (Exception ex)
             {
