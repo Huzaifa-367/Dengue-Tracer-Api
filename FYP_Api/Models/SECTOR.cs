@@ -16,7 +16,7 @@ namespace FYP_Api.Models
     {
         public int sec_id { get; set; }
         public string sec_name { get; set; }
-        public Nullable<long> threshold { get; set; }
+        public Nullable<int> threshold { get; set; }
         public string lat_long { get; set; }
     }
 }

@@ -18,5 +18,6 @@ namespace FYP_Api.Models
         public Nullable<int> case_id { get; set; }
         public Nullable<bool> type { get; set; }
         public Nullable<System.DateTime> date { get; set; }
+        public string title { get; set; }
     }
 }

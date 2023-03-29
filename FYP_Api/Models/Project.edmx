@@ -38,6 +38,7 @@
           </Key>
           <Property Name="notif_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="case_id" Type="int" />
+          <Property Name="title" Type="varchar" MaxLength="30" />
           <Property Name="type" Type="bit" />
           <Property Name="date" Type="datetime" />
         </EntityType>
@@ -47,7 +48,7 @@
           </Key>
           <Property Name="sec_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="sec_name" Type="varchar" MaxLength="20" />
-          <Property Name="threshold" Type="bigint" />
+          <Property Name="threshold" Type="int" />
           <Property Name="lat_long" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="USERs">
@@ -112,6 +113,7 @@
           <Property Name="case_id" Type="Int32" />
           <Property Name="type" Type="Boolean" />
           <Property Name="date" Type="DateTime" Precision="3" />
+          <Property Name="title" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="SECTOR">
           <Key>
@@ -119,8 +121,8 @@
           </Key>
           <Property Name="sec_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="sec_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="threshold" Type="Int64" />
-          <Property Name="lat_long" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="threshold" Type="Int32" />
+          <Property Name="lat_long" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
         </EntityType>
         <EntityType Name="USER">
           <Key>
@@ -184,6 +186,7 @@
           <EntitySetMapping Name="NOTIFICATIONs">
             <EntityTypeMapping TypeName="ProjectModel.NOTIFICATION">
               <MappingFragment StoreEntitySet="NOTIFICATIONs">
+                <ScalarProperty Name="title" ColumnName="title" />
                 <ScalarProperty Name="notif_id" ColumnName="notif_id" />
                 <ScalarProperty Name="case_id" ColumnName="case_id" />
                 <ScalarProperty Name="type" ColumnName="type" />
