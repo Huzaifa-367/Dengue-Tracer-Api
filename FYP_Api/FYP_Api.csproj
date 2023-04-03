@@ -235,6 +235,9 @@
     <Compile Include="Models\NOTIFICATION.cs">
       <DependentUpon>Project.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\POLYGON.cs">
+      <DependentUpon>Project.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Project.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -283,7 +286,6 @@
       <DependentUpon>Project.edmx</DependentUpon>
       <LastGenOutput>Project.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Models\Project.edmx.sql" />
     <Content Include="Models\Project.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Project.edmx</DependentUpon>

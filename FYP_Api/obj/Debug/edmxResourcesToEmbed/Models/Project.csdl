@@ -33,9 +33,17 @@
     </Key>
     <Property Name="notif_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="case_id" Type="Int32" />
+    <Property Name="title" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
     <Property Name="type" Type="Boolean" />
     <Property Name="date" Type="DateTime" Precision="3" />
-    <Property Name="title" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="POLYGON">
+    <Key>
+      <PropertyRef Name="poly_id" />
+    </Key>
+    <Property Name="poly_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="sec_id" Type="Int32" />
+    <Property Name="lat_long" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
   </EntityType>
   <EntityType Name="SECTOR">
     <Key>
@@ -44,7 +52,7 @@
     <Property Name="sec_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="sec_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
     <Property Name="threshold" Type="Int32" />
-    <Property Name="lat_long" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+    <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
   </EntityType>
   <EntityType Name="USER">
     <Key>
@@ -66,6 +74,7 @@
     <EntitySet Name="ASSIGNSECTORS" EntityType="Self.ASSIGNSECTOR" />
     <EntitySet Name="CASES_LOGS" EntityType="Self.CASES_LOGS" />
     <EntitySet Name="NOTIFICATIONs" EntityType="Self.NOTIFICATION" />
+    <EntitySet Name="POLYGONS" EntityType="Self.POLYGON" />
     <EntitySet Name="SECTORS" EntityType="Self.SECTOR" />
     <EntitySet Name="USERs" EntityType="Self.USER" />
   </EntityContainer>

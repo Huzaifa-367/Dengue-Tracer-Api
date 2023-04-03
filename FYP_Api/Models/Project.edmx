@@ -42,6 +42,14 @@
           <Property Name="type" Type="bit" />
           <Property Name="date" Type="datetime" />
         </EntityType>
+        <EntityType Name="POLYGONS">
+          <Key>
+            <PropertyRef Name="poly_id" />
+          </Key>
+          <Property Name="poly_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sec_id" Type="int" />
+          <Property Name="lat_long" Type="varchar" MaxLength="80" />
+        </EntityType>
         <EntityType Name="SECTORS">
           <Key>
             <PropertyRef Name="sec_id" />
@@ -49,7 +57,7 @@
           <Property Name="sec_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="sec_name" Type="varchar" MaxLength="20" />
           <Property Name="threshold" Type="int" />
-          <Property Name="lat_long" Type="varchar(max)" />
+          <Property Name="description" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="USERs">
           <Key>
@@ -71,6 +79,7 @@
           <EntitySet Name="ASSIGNSECTORS" EntityType="Self.ASSIGNSECTORS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CASES_LOGS" EntityType="Self.CASES_LOGS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="NOTIFICATIONs" EntityType="Self.NOTIFICATIONs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="POLYGONS" EntityType="Self.POLYGONS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SECTORS" EntityType="Self.SECTORS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="USERs" EntityType="Self.USERs" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
@@ -111,9 +120,17 @@
           </Key>
           <Property Name="notif_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="case_id" Type="Int32" />
+          <Property Name="title" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="type" Type="Boolean" />
           <Property Name="date" Type="DateTime" Precision="3" />
-          <Property Name="title" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="POLYGON">
+          <Key>
+            <PropertyRef Name="poly_id" />
+          </Key>
+          <Property Name="poly_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="sec_id" Type="Int32" />
+          <Property Name="lat_long" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="SECTOR">
           <Key>
@@ -122,7 +139,7 @@
           <Property Name="sec_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="sec_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="threshold" Type="Int32" />
-          <Property Name="lat_long" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="USER">
           <Key>
@@ -144,6 +161,7 @@
           <EntitySet Name="ASSIGNSECTORS" EntityType="Self.ASSIGNSECTOR" />
           <EntitySet Name="CASES_LOGS" EntityType="Self.CASES_LOGS" />
           <EntitySet Name="NOTIFICATIONs" EntityType="Self.NOTIFICATION" />
+          <EntitySet Name="POLYGONS" EntityType="Self.POLYGON" />
           <EntitySet Name="SECTORS" EntityType="Self.SECTOR" />
           <EntitySet Name="USERs" EntityType="Self.USER" />
         </EntityContainer>
@@ -186,11 +204,20 @@
           <EntitySetMapping Name="NOTIFICATIONs">
             <EntityTypeMapping TypeName="ProjectModel.NOTIFICATION">
               <MappingFragment StoreEntitySet="NOTIFICATIONs">
-                <ScalarProperty Name="title" ColumnName="title" />
                 <ScalarProperty Name="notif_id" ColumnName="notif_id" />
                 <ScalarProperty Name="case_id" ColumnName="case_id" />
+                <ScalarProperty Name="title" ColumnName="title" />
                 <ScalarProperty Name="type" ColumnName="type" />
                 <ScalarProperty Name="date" ColumnName="date" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="POLYGONS">
+            <EntityTypeMapping TypeName="ProjectModel.POLYGON">
+              <MappingFragment StoreEntitySet="POLYGONS">
+                <ScalarProperty Name="poly_id" ColumnName="poly_id" />
+                <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+                <ScalarProperty Name="lat_long" ColumnName="lat_long" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -200,7 +227,7 @@
                 <ScalarProperty Name="sec_id" ColumnName="sec_id" />
                 <ScalarProperty Name="sec_name" ColumnName="sec_name" />
                 <ScalarProperty Name="threshold" ColumnName="threshold" />
-                <ScalarProperty Name="lat_long" ColumnName="lat_long" />
+                <ScalarProperty Name="description" ColumnName="description" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

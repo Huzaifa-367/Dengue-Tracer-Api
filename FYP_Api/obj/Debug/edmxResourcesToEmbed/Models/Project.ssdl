@@ -37,6 +37,14 @@
     <Property Name="type" Type="bit" />
     <Property Name="date" Type="datetime" />
   </EntityType>
+  <EntityType Name="POLYGONS">
+    <Key>
+      <PropertyRef Name="poly_id" />
+    </Key>
+    <Property Name="poly_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="sec_id" Type="int" />
+    <Property Name="lat_long" Type="varchar" MaxLength="80" />
+  </EntityType>
   <EntityType Name="SECTORS">
     <Key>
       <PropertyRef Name="sec_id" />
@@ -44,7 +52,7 @@
     <Property Name="sec_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="sec_name" Type="varchar" MaxLength="20" />
     <Property Name="threshold" Type="int" />
-    <Property Name="lat_long" Type="varchar(max)" />
+    <Property Name="description" Type="varchar(max)" />
   </EntityType>
   <EntityType Name="USERs">
     <Key>
@@ -66,6 +74,7 @@
     <EntitySet Name="ASSIGNSECTORS" EntityType="Self.ASSIGNSECTORS" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="CASES_LOGS" EntityType="Self.CASES_LOGS" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="NOTIFICATIONs" EntityType="Self.NOTIFICATIONs" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="POLYGONS" EntityType="Self.POLYGONS" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="SECTORS" EntityType="Self.SECTORS" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="USERs" EntityType="Self.USERs" Schema="dbo" store:Type="Tables" />
   </EntityContainer>

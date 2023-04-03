@@ -34,11 +34,20 @@
     <EntitySetMapping Name="NOTIFICATIONs">
       <EntityTypeMapping TypeName="ProjectModel.NOTIFICATION">
         <MappingFragment StoreEntitySet="NOTIFICATIONs">
-          <ScalarProperty Name="title" ColumnName="title" />
           <ScalarProperty Name="notif_id" ColumnName="notif_id" />
           <ScalarProperty Name="case_id" ColumnName="case_id" />
+          <ScalarProperty Name="title" ColumnName="title" />
           <ScalarProperty Name="type" ColumnName="type" />
           <ScalarProperty Name="date" ColumnName="date" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="POLYGONS">
+      <EntityTypeMapping TypeName="ProjectModel.POLYGON">
+        <MappingFragment StoreEntitySet="POLYGONS">
+          <ScalarProperty Name="poly_id" ColumnName="poly_id" />
+          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+          <ScalarProperty Name="lat_long" ColumnName="lat_long" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -48,7 +57,7 @@
           <ScalarProperty Name="sec_id" ColumnName="sec_id" />
           <ScalarProperty Name="sec_name" ColumnName="sec_name" />
           <ScalarProperty Name="threshold" ColumnName="threshold" />
-          <ScalarProperty Name="lat_long" ColumnName="lat_long" />
+          <ScalarProperty Name="description" ColumnName="description" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

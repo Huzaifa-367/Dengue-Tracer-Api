@@ -12,12 +12,10 @@ namespace FYP_Api.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class NOTIFICATION
+    public partial class POLYGON
     {
-        public int notif_id { get; set; }
-        public Nullable<int> case_id { get; set; }
-        public string title { get; set; }
-        public Nullable<bool> type { get; set; }
-        public Nullable<System.DateTime> date { get; set; }
+        public int poly_id { get; set; }
+        public Nullable<int> sec_id { get; set; }
+        public string lat_long { get; set; }
     }
 }

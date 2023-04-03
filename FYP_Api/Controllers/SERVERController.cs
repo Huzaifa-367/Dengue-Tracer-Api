@@ -1,6 +1,9 @@
 ﻿using FYP_Api.Models;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -8,7 +11,9 @@ using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Http;
+using Windows.UI.Xaml.Shapes;
 
 namespace FYP_Api.Controllers
 {
@@ -365,7 +370,7 @@ namespace FYP_Api.Controllers
                              join c in db.CASES_LOGS on u.user_id equals c.user_id
                              join s in db.SECTORS on u.sec_id equals s.sec_id
                              where c.startdate == targetDate
-                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, u.sec_id, s.sec_name, s.lat_long, c.startdate, c.status, c.enddate };
+                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, u.sec_id, s.sec_name, s.description, c.startdate, c.status, c.enddate };
 
                 return Request.CreateResponse(HttpStatusCode.OK, result.OrderByDescending(n => n.startdate));
             }
@@ -410,7 +415,7 @@ namespace FYP_Api.Controllers
                 var result = from u in lst
                              join c in db.CASES_LOGS on u.user_id equals c.user_id
                              join s in db.SECTORS on u.sec_id equals s.sec_id
-                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, u.sec_id, s.sec_name, s.lat_long, c.startdate, c.status, c.enddate };
+                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, u.sec_id, s.sec_name, s.description, c.startdate, c.status, c.enddate };
 
 
                 /*     foreach(var item in lst)
@@ -555,7 +560,7 @@ namespace FYP_Api.Controllers
                 }
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 return false;
@@ -606,31 +611,65 @@ namespace FYP_Api.Controllers
 
         //-------------------------------   SECTORS API'S
 
-
-
         [HttpPost]
-        public HttpResponseMessage NewSector()
+        public HttpResponseMessage SavePolygons([FromBody] JObject requestBody)
         {
             try
             {
-                HttpRequest request = HttpContext.Current.Request;
-                string name = request["sec_name"];
-                string lat_long = request["lat_long"];
-                string threshold = request["threshold"];
-                SECTOR sect = db.SECTORS.Where(s => s.sec_name == name && s.lat_long == lat_long).FirstOrDefault();
-                if (sect != null)
+                // Extract the necessary data from the request body
+                string secName = requestBody["secName"].ToString();
+                double threshold = Convert.ToDouble(requestBody["threshold"]);
+                string description = requestBody["description"].ToString();
+                List<List<List<double>>> latLongs = requestBody["latLongs"].ToObject<List<List<List<double>>>>();
+
+                // First, check if the sector already exists
+                var existingSector = db.SECTORS.FirstOrDefault(s => s.sec_name == secName);
+                if (existingSector == null)
                 {
-                    return Request.CreateResponse(HttpStatusCode.OK, "Exsist");
+                    // Create a new sector if it doesn't exist
+                    var newSector = new SECTOR
+                    {
+                        sec_name = secName,
+                        threshold = (int?)threshold,
+                        description = description
+                    };
+                    db.SECTORS.Add(newSector);
+                    db.SaveChanges();
+
+                    // Get the generated sec_id
+                    var secId = newSector.sec_id;
+
+                    // Add the polygons to the database
+                    foreach (var polygon in latLongs)
+                    {
+                        var latLongString = string.Join(" ", polygon.Select(p => $"{p[0]},{p[1]}"));
+                        var newPolygon = new POLYGON
+                        {
+                            sec_id = secId,
+                            lat_long = latLongString
+                        };
+                        db.POLYGONS.Add(newPolygon);
+                    }
+
+                    db.SaveChanges();
                 }
-                SECTOR newsector = new SECTOR
+                else
                 {
-                    sec_name = name,
-                    threshold = int.Parse(threshold),
-                    lat_long = lat_long,
-                };
-                _ = db.SECTORS.Add(newsector);
-                _ = db.SaveChanges();
-                return Request.CreateResponse(HttpStatusCode.OK, "New Sector Added");
+                    // If the sector already exists, just add the polygons
+                    foreach (var polygon in latLongs)
+                    {
+                        var latLongString = string.Join(" ", polygon.Select(p => $"{p[0]},{p[1]}"));
+                        var newPolygon = new POLYGON
+                        {
+                            sec_id = existingSector.sec_id,
+                            lat_long = latLongString
+                        };
+                        db.POLYGONS.Add(newPolygon);
+                    }
+
+                    db.SaveChanges();
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, "Polygons saved successfully");
             }
             catch (Exception ex)
             {
@@ -639,6 +678,45 @@ namespace FYP_Api.Controllers
         }
 
 
+
+        [HttpGet]
+        public HttpResponseMessage GetSectors()
+        {
+            try
+            {
+                // Retrieve all sectors from the database
+                var sectors = db.SECTORS.ToList();
+
+                // Create a list to store the sector data as JSON objects
+                var sectorData = new List<object>();
+
+                // Loop through each sector and extract the necessary data
+                foreach (var sector in sectors)
+                {
+                    var polygons = db.POLYGONS.Where(p => p.sec_id == sector.sec_id).ToList();
+
+                    var latLongs = polygons.Select(p => p.lat_long).ToList();
+
+                    var sectorObject = new
+                    {
+                        sec_id = sector.sec_id,
+                        sec_name = sector.sec_name,
+                        threshold = sector.threshold,
+                        description = sector.description,
+                        latLongs = latLongs
+                    };
+
+                    sectorData.Add(sectorObject);
+                }
+
+                // Return the sector data as a JSON object
+                return Request.CreateResponse(HttpStatusCode.OK, sectorData);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
 
 
         //----------------------------------------------------------------------------//
@@ -663,21 +741,6 @@ namespace FYP_Api.Controllers
 
         //----------------------------------------------------------------------------//
 
-
-        [HttpGet]
-        public HttpResponseMessage GetSectors()
-        {
-            try
-            {
-                var lst = db.SECTORS.ToList();
-
-                return Request.CreateResponse(HttpStatusCode.OK, lst);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
         //----------------------------------------------------------------------------//
 
 
@@ -769,7 +832,7 @@ namespace FYP_Api.Controllers
                 var result = from u in lst
 
                              join s in db.SECTORS on u.sec_id equals s.sec_id
-                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, s.sec_id, s.sec_name, s.lat_long };
+                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, s.sec_id, s.sec_name, s.description };
 
 
                 /*     foreach(var item in lst)
@@ -800,7 +863,7 @@ namespace FYP_Api.Controllers
                 var result = from u in lst
                              join a in db.ASSIGNSECTORS on u.user_id equals a.user_id
                              join s in db.SECTORS on a.sec_id equals s.sec_id
-                             select new { u.user_id, u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, s.sec_id, s.sec_name, s.lat_long };
+                             select new { u.user_id, u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, s.sec_id, s.sec_name, s.description };
 
 
                 /*     foreach(var item in lst)

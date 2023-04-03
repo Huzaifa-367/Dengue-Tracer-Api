@@ -4,13 +4,14 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="3c807ddb74aa492e94cd8af838e19414" Name="Diagram1">
+      <Diagram DiagramId="2895da9f695a40db9f0c22b4b4a29603" Name="Diagram1">
         <EntityTypeShape EntityType="ProjectModel.ACTION_LOGS" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ProjectModel.ASSIGNSECTOR" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ProjectModel.CASES_LOGS" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ProjectModel.NOTIFICATION" Width="1.5" PointX="2.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="ProjectModel.SECTOR" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="ProjectModel.USER" Width="1.5" PointX="4.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProjectModel.POLYGON" Width="1.5" PointX="6.625" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProjectModel.SECTOR" Width="1.5" PointX="4.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProjectModel.USER" Width="1.5" PointX="4.5" PointY="0.625" IsExpanded="true" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

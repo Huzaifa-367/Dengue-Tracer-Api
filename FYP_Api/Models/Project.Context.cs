@@ -29,6 +29,7 @@ namespace FYP_Api.Models
         public virtual DbSet<ASSIGNSECTOR> ASSIGNSECTORS { get; set; }
         public virtual DbSet<CASES_LOGS> CASES_LOGS { get; set; }
         public virtual DbSet<NOTIFICATION> NOTIFICATIONs { get; set; }
+        public virtual DbSet<POLYGON> POLYGONS { get; set; }
         public virtual DbSet<SECTOR> SECTORS { get; set; }
         public virtual DbSet<USER> USERs { get; set; }
     }
