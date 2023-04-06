@@ -137,7 +137,7 @@
             <PropertyRef Name="sec_id" />
           </Key>
           <Property Name="sec_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="sec_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="sec_name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="threshold" Type="Int32" />
           <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>

@@ -612,70 +612,60 @@ namespace FYP_Api.Controllers
         //-------------------------------   SECTORS API'S
 
         [HttpPost]
-        public HttpResponseMessage SavePolygons([FromBody] JObject requestBody)
+        public HttpResponseMessage SavePolygons(dynamic data)
         {
             try
             {
-                // Extract the necessary data from the request body
-                string secName = requestBody["secName"].ToString();
-                double threshold = Convert.ToDouble(requestBody["threshold"]);
-                string description = requestBody["description"].ToString();
-                List<List<List<double>>> latLongs = requestBody["latLongs"].ToObject<List<List<List<double>>>>();
-
+                // Parse the data from the request body
+                string secName = data.secName;
+                int threshold = data.threshold;
+                string description = data.description;
+                List<double[]> latLongs = data.latLongs.ToObject<List<double[]>>();
+               
                 // First, check if the sector already exists
                 var existingSector = db.SECTORS.FirstOrDefault(s => s.sec_name == secName);
                 if (existingSector == null)
                 {
                     // Create a new sector if it doesn't exist
-                    var newSector = new SECTOR
+                    var sector = new SECTOR
+                {
+                    sec_name = secName,
+                    threshold = threshold,
+                    description = description
+                };
+
+                // Add the sector to the database
+                db.SECTORS.Add(sector);
+                db.SaveChanges();
+
+                // Loop through the latLongs and add each point to the database as a new polygon
+                foreach (var latLong in latLongs)
+                {
+                    var polygon = new POLYGON
                     {
-                        sec_name = secName,
-                        threshold = (int?)threshold,
-                        description = description
+                        sec_id = sector.sec_id,
+                        lat_long = string.Join(",", latLong)
                     };
-                    db.SECTORS.Add(newSector);
-                    db.SaveChanges();
-
-                    // Get the generated sec_id
-                    var secId = newSector.sec_id;
-
-                    // Add the polygons to the database
-                    foreach (var polygon in latLongs)
-                    {
-                        var latLongString = string.Join(" ", polygon.Select(p => $"{p[0]},{p[1]}"));
-                        var newPolygon = new POLYGON
-                        {
-                            sec_id = secId,
-                            lat_long = latLongString
-                        };
-                        db.POLYGONS.Add(newPolygon);
-                    }
-
-                    db.SaveChanges();
+                    db.POLYGONS.Add(polygon);
+                }
+                db.SaveChanges();
                 }
                 else
                 {
-                    // If the sector already exists, just add the polygons
-                    foreach (var polygon in latLongs)
-                    {
-                        var latLongString = string.Join(" ", polygon.Select(p => $"{p[0]},{p[1]}"));
-                        var newPolygon = new POLYGON
-                        {
-                            sec_id = existingSector.sec_id,
-                            lat_long = latLongString
-                        };
-                        db.POLYGONS.Add(newPolygon);
-                    }
-
-                    db.SaveChanges();
+                    // Loop through the latLongs and add each point to the database as a new polygon
+                    return Request.CreateResponse(HttpStatusCode.OK, "Sector Already Exsist");
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, "Polygons saved successfully");
+                // If the sector already exists, just add the polygons
+                // Return a success response
+                return Request.CreateResponse(HttpStatusCode.OK, "Sector saved successfully");
             }
             catch (Exception ex)
             {
+                // Return an error response if any exception occurs
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
 
 
 
