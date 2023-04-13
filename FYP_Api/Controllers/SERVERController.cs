@@ -747,18 +747,18 @@ namespace FYP_Api.Controllers
                 //string quey = "insert into ASSIGNSECTORS values('" + sec_id + "','" + user_id + "')";
 
                 HttpRequest request = HttpContext.Current.Request;
-                int secc_id = int.Parse(request["sec_id"]);
-                int usser_id = int.Parse(request["user_id"]);
-                USER ass = db.USERs.Where(s => s.user_id == usser_id).FirstOrDefault();
+                //int secc_id = sec_id;
+                //int usser_id = user_id;
+                USER ass = db.USERs.Where(s => s.user_id == user_id).FirstOrDefault();
                 //if (ass != null)
                 //{
                 //    return Request.CreateResponse(HttpStatusCode.OK, "Allready Assigned");
                 //}
 
-                ass.sec_id = secc_id;
+                ass.sec_id = sec_id;
 
                 _ = db.SaveChanges();
-                return Request.CreateResponse(HttpStatusCode.OK, "Sector " + secc_id + " Assigned to User : " + usser_id);
+                return Request.CreateResponse(HttpStatusCode.OK, "Sector " + sec_id + " Assigned to User : " + user_id);
 
             }
             catch (Exception ex)
@@ -784,22 +784,23 @@ namespace FYP_Api.Controllers
                 //string quey = "insert into ASSIGNSECTORS values('" + sec_id + "','" + user_id + "')";
 
                 HttpRequest request = HttpContext.Current.Request;
-                int secc_id = int.Parse(request["sec_id"]);
-                int usser_id = int.Parse(request["user_id"]);
-                /*ASSIGNSECTOR ass = db.ASSIGNSECTORS.Where(s => s.sec_id == secc_id && s.user_id == usser_id).FirstOrDefault();
-                if (ass != null)
+                //int secc_id = int.Parse(request["sec_id"]);
+                //int usser_id = int.Parse(request["user_id"]);
+                ASSIGNSECTOR ass = db.ASSIGNSECTORS.Where(s => s.sec_id == sec_id && s.user_id == user_id).FirstOrDefault();
+                if (ass == null)
                 {
-                    return Request.CreateResponse(HttpStatusCode.OK, "Exsist");
-                }*/
-                ASSIGNSECTOR newass = new ASSIGNSECTOR
-                {
-                    sec_id = secc_id,
-                    user_id = usser_id,
-                };
-                _ = db.ASSIGNSECTORS.Add(newass);
-                _ = db.SaveChanges();
-                return Request.CreateResponse(HttpStatusCode.OK, "Sector " + secc_id + " Assigned to User : " + user_id);
-                // return Request.CreateResponse(HttpStatusCode.OK, "Sector Assigned " + quey);
+                    ASSIGNSECTOR newass = new ASSIGNSECTOR
+                    {
+                        sec_id = sec_id,
+                        user_id = user_id,
+                    };
+                    _ = db.ASSIGNSECTORS.Add(newass);
+                    _ = db.SaveChanges();
+                    return Request.CreateResponse(HttpStatusCode.OK, "Sector " + sec_id + " Assigned to User : " + user_id);
+                    // return Request.CreateResponse(HttpStatusCode.OK, "Sector Assigned " + quey);
+                    
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, "Already Assigned");
 
             }
             catch (Exception ex)
