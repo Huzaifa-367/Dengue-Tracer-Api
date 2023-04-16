@@ -437,7 +437,8 @@ namespace FYP_Api.Controllers
 
 
         [HttpPost]
-        public HttpResponseMessage NewOfficer()
+        public HttpResponseMessage CreateOfficerAndAssignSector()
+        
         {
             try
             {
@@ -447,7 +448,7 @@ namespace FYP_Api.Controllers
                 USER user = db.USERs.Where(s => s.email == email).FirstOrDefault();
                 if (user != null)
                 {
-                    return Request.CreateResponse(HttpStatusCode.OK, "Officer Already Exsist");
+                    return Request.CreateResponse(HttpStatusCode.OK, "Officer Already Exist");
                 }
 
                 USER newuser = new USER
@@ -456,21 +457,42 @@ namespace FYP_Api.Controllers
                     name = request["name"],
                     phone_number = request["Phone_number"],
                     role = "officer",
-                    password = request["password"]
+                    password = request["password"],
                 };
 
-                db.USERs.Add(newuser);
+                // Assign sector to user
+                int sectorId;
+                if (!int.TryParse(request["sec_id"], out sectorId))
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid sector ID");
+                }
+
+                ASSIGNSECTOR ass = db.ASSIGNSECTORS.Where(s => s.sec_id == sectorId && s.user_id == newuser.user_id).FirstOrDefault();
+                if (ass != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Sector already assigned to this user");
+                }
+
+                newuser = db.USERs.Add(newuser);
                 db.SaveChanges();
 
-                return Request.CreateResponse(HttpStatusCode.OK, "Officer Account Created");
+                ASSIGNSECTOR newass = new ASSIGNSECTOR
+                {
+                    sec_id = sectorId,
+                    user_id = newuser.user_id,
+                };
+                _ = db.ASSIGNSECTORS.Add(newass);
+                _ = db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.OK, "Officer account created and sector assigned");
             }
             catch (Exception ex)
             {
-
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
-
         }
+
+
 
         //----------------------------------------------------------------------------//
 
