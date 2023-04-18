@@ -415,7 +415,7 @@ namespace FYP_Api.Controllers
                 var result = from u in lst
                              join c in db.CASES_LOGS on u.user_id equals c.user_id
                              join s in db.SECTORS on u.sec_id equals s.sec_id
-                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, u.sec_id, s.sec_name, s.description, c.startdate, c.status, c.enddate };
+                             select new { u.user_id, u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, u.sec_id, s.sec_name, s.description, c.startdate, c.status, c.enddate };
 
 
                 /*     foreach(var item in lst)
@@ -792,22 +792,11 @@ namespace FYP_Api.Controllers
 
         //----------------------------------------------------------------------------//
 
-
         [HttpPost]
-        public HttpResponseMessage AssignOfficerSectors(int sec_id,/*List<int> lst,*/int user_id)
+        public HttpResponseMessage AssignOfficerSectors(int sec_id, int user_id)
         {
             try
             {
-
-                /*     foreach(var item in lst)
-                     {
-                         string quey = "insert into Dumm values('" + item + "','" + userid + "')";
-                     }*/
-                //string quey = "insert into ASSIGNSECTORS values('" + sec_id + "','" + user_id + "')";
-
-                HttpRequest request = HttpContext.Current.Request;
-                //int secc_id = int.Parse(request["sec_id"]);
-                //int usser_id = int.Parse(request["user_id"]);
                 ASSIGNSECTOR ass = db.ASSIGNSECTORS.Where(s => s.sec_id == sec_id && s.user_id == user_id).FirstOrDefault();
                 if (ass == null)
                 {
@@ -818,18 +807,21 @@ namespace FYP_Api.Controllers
                     };
                     _ = db.ASSIGNSECTORS.Add(newass);
                     _ = db.SaveChanges();
-                    return Request.CreateResponse(HttpStatusCode.OK, "Sector " + sec_id + " Assigned to User : " + user_id);
-                    // return Request.CreateResponse(HttpStatusCode.OK, "Sector Assigned " + quey);
-                    
+                    return Request.CreateResponse(HttpStatusCode.OK,"Assigned");
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, "Already Assigned");
-
+                else
+                {
+                    ass.sec_id = sec_id;
+                    _ = db.SaveChanges();
+                    return Request.CreateResponse(HttpStatusCode.OK, "Updated");
+                }
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
 
 
         //----------------------------------------------------------------------------//
