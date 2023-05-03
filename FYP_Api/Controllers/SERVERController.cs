@@ -24,7 +24,7 @@ namespace FYP_Api.Controllers
 
 
         [HttpPost]
-        public HttpResponseMessage NewUser()
+        public HttpResponseMessage SignUp()
         {
             try
             {
@@ -41,6 +41,7 @@ namespace FYP_Api.Controllers
                 {
                     email = email,
                     name = request["name"],
+                    sec_id = int.Parse(request["sec_id"]),
                     phone_number = request["Phone_number"],
                     role = request["role"],
                     password = request["password"],
@@ -250,18 +251,144 @@ namespace FYP_Api.Controllers
                 if (user == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, "false");
-
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, user);
+                else if (user.role.ToLower() == "user")
+                {
 
+                    var result = from u in db.USERs
+                                 join c in db.CASES_LOGS
+                                     on u.user_id equals c.user_id into caselogs
+                                 from c in caselogs.DefaultIfEmpty()
+                                 join s in db.SECTORS on u.sec_id equals s.sec_id
+                                 where u.email == email && u.password == password
+                                 select new
+                                 {
+                                     u.user_id, u.name, u.email, u.phone_number, u.image, u.role,
+                                     u.home_location, u.office_location,u.sec_id,
+                                     s.sec_name, s.description,
+                                     startdate = (DateTime?)c.startdate,
+                                     status = (bool?)(c != null ? c.status : false),
+                                     enddate = (DateTime?)c.enddate
+                                 };
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+                }
+                else
+                {
+
+                    var admin = from u in db.USERs.Where(s => s.email == email && s.password == password)
+                    select new
+                               {
+                                   u.user_id, u.image, u.name,u.email, u.phone_number,
+                                   u.role, u.home_location, u.office_location, u.sec_id,
+                               };
+                    return Request.CreateResponse(HttpStatusCode.OK, admin);
+                }
             }
             catch (Exception ex)
             {
-
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
-
         }
+
+
+        //[HttpGet]
+        //public HttpResponseMessage Login(string email, string password)
+        //{
+        //    try
+        //    {
+        //        var user = db.USERs.Where(s => s.email == email && s.password == password).FirstOrDefault();
+        //        if (user == null)
+        //        {
+        //            return Request.CreateResponse(HttpStatusCode.OK, "false");
+        //        }
+        //        else
+        //        {
+        //            var result = from u in db.USERs
+        //                         where u.email == email && u.password == password
+        //                         join c in db.CASES_LOGS on u.user_id equals c.user_id
+        //                         join s in db.SECTORS on u.sec_id equals s.sec_id
+
+        //                         select new { u.user_id, u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, u.sec_id, s.sec_name, s.description, c.startdate, c.status, c.enddate };
+
+        //            return Request.CreateResponse(HttpStatusCode.OK, result);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+        //    }
+        //}
+
+
+        //[HttpGet]
+        //public HttpResponseMessage Login(string email, string password)
+        //{
+        //    try
+        //    {
+        //        var user = db.USERs.Where(s => s.email == email && s.password == password).FirstOrDefault();
+        //        if (user == null)
+        //        {
+        //            return Request.CreateResponse(HttpStatusCode.OK, "false");
+        //        }
+        //        else if (user.role == "user")
+        //        {
+
+        //            var result = from u in db.USERs
+        //                         join c in db.CASES_LOGS
+        //                             on u.user_id equals c.user_id into caselogs
+        //                         from c in caselogs.DefaultIfEmpty()
+        //                         join s in db.SECTORS on u.sec_id equals s.sec_id
+        //                         where u.email == email && u.password == password
+        //                         select new
+        //                         {
+        //                             u.user_id,
+        //                             u.image,
+        //                             u.name,
+        //                             u.email,
+        //                             u.phone_number,
+        //                             u.role,
+        //                             u.home_location,
+        //                             u.office_location,
+        //                             u.sec_id,
+        //                             s.sec_name,
+        //                             s.description,
+        //                             startdate = (DateTime?)c.startdate,
+        //                             status = (bool?)(c != null ? c.status : false),
+        //                             enddate = (DateTime?)c.enddate
+        //                         };
+
+        //            // Convert result to a list of dictionaries
+        //            var dataList = result.ToList().Select(r => new Dictionary<string, object>
+        //    {
+        //        { "user_id", r.user_id },
+        //        { "name", r.name },
+        //        { "email", r.email },
+        //        { "image", r.image },
+        //        { "phone_number", r.phone_number },
+        //        { "role", r.role },
+        //        { "home_location", r.home_location },
+        //        { "office_location", r.office_location },
+        //        { "sec_id", r.sec_id },
+        //        { "sec_name", r.sec_name },
+        //        { "description", r.description },
+        //        { "startdate", r.startdate },
+        //        { "status", r.status },
+        //        { "enddate", r.enddate }
+        //    });
+
+        //            return Request.CreateResponse(HttpStatusCode.OK, dataList);
+        //        }
+        //        else
+        //        {
+        //            return Request.CreateResponse(HttpStatusCode.OK, user);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+        //    }
+        //}
+
 
         //----------------------------------------------------------------------------//
 
