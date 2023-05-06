@@ -819,16 +819,14 @@ namespace FYP_Api.Controllers
 
 
         [HttpGet]
-        public HttpResponseMessage GetSectors()
+        public HttpResponseMessage GetAllSectors()
         {
             try
             {
                 // Retrieve all sectors from the database
                 var sectors = db.SECTORS.ToList();
-
                 // Create a list to store the sector data as JSON objects
                 var sectorData = new List<object>();
-
                 // Loop through each sector and extract the necessary data
                 foreach (var sector in sectors)
                 {
@@ -856,6 +854,9 @@ namespace FYP_Api.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+
+
 
 
         //----------------------------------------------------------------------------//
@@ -958,22 +959,30 @@ namespace FYP_Api.Controllers
         {
             try
             {
-
-                //var Query = "select from us in USER join ass in ASSIGNSECTOR join sec in SECTOR";
                 var lst = db.USERs.Where(u => u.role == "user");
                 var result = from u in lst
-
                              join s in db.SECTORS on u.sec_id equals s.sec_id
-                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, s.sec_id, s.sec_name, s.description };
-
-
-                /*     foreach(var item in lst)
-                     {
-                         string quey = "insert into Dumm values('" + item + "','" + userid + "')";
-                     }*/
-
+                             select new
+                             {
+                                 user_id = u.user_id,
+                                 name = u.name,
+                                 email = u.email,
+                                 phone_number = u.phone_number,
+                                 role = u.role,
+                                 home_location = u.home_location,
+                                 office_location = u.office_location,
+                                 sector = new
+                                 {
+                                     sec_id = s.sec_id,
+                                     sec_name = s.sec_name,
+                                     threshold = s.threshold,
+                                     description = s.description,
+                                     latLongs = db.POLYGONS.Where(p => p.sec_id == s.sec_id)
+                                                         .Select(p => p.lat_long)
+                                                         .ToList()
+                                 }
+                             };
                 return Request.CreateResponse(HttpStatusCode.OK, result);
-
             }
             catch (Exception ex)
             {
@@ -984,32 +993,44 @@ namespace FYP_Api.Controllers
 
         //----------------------------------------------------------------------------//
 
-        [HttpGet]
+
+
+        [HttpGet] 
         public HttpResponseMessage GetOfficerSectors()
         {
             try
             {
-
-                //var Query = "select from us in USER join ass in ASSIGNSECTOR join sec in SECTOR";
                 var lst = db.USERs.Where(u => u.role == "officer");
                 var result = from u in lst
                              join a in db.ASSIGNSECTORS on u.user_id equals a.user_id
                              join s in db.SECTORS on a.sec_id equals s.sec_id
-                             select new { u.user_id, u.name, u.email, u.phone_number, u.role, u.home_location, u.office_location, s.sec_id, s.sec_name, s.description };
-
-
-                /*     foreach(var item in lst)
-                     {
-                         string quey = "insert into Dumm values('" + item + "','" + userid + "')";
-                     }*/
+                             select new
+                             {
+                                 u.user_id,
+                                 u.name,
+                                 u.email,
+                                 u.phone_number,
+                                 u.role,
+                                 u.home_location,
+                                 u.office_location,
+                                 sector = new
+                                 {
+                                     s.sec_id,
+                                     s.sec_name,
+                                     s.threshold,
+                                     s.description,
+                                     latLongs = db.POLYGONS.Where(p => p.sec_id == s.sec_id).Select(p => p.lat_long).ToList()
+                                 }
+                             };
 
                 return Request.CreateResponse(HttpStatusCode.OK, result);
-
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+
     }
 }
