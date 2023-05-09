@@ -19,5 +19,6 @@ namespace FYP_Api.Models
         public string title { get; set; }
         public Nullable<bool> type { get; set; }
         public Nullable<System.DateTime> date { get; set; }
+        public Nullable<bool> status { get; set; }
     }
 }

@@ -29,8 +29,8 @@
           <Property Name="case_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="user_id" Type="int" />
           <Property Name="status" Type="bit" />
-          <Property Name="startdate" Type="date" />
-          <Property Name="enddate" Type="date" />
+          <Property Name="startdate" Type="datetime" />
+          <Property Name="enddate" Type="datetime" />
         </EntityType>
         <EntityType Name="NOTIFICATIONs">
           <Key>
@@ -40,6 +40,7 @@
           <Property Name="case_id" Type="int" />
           <Property Name="title" Type="varchar" MaxLength="30" />
           <Property Name="type" Type="bit" />
+          <Property Name="status" Type="bit" />
           <Property Name="date" Type="datetime" />
         </EntityType>
         <EntityType Name="POLYGONS">
@@ -48,14 +49,14 @@
           </Key>
           <Property Name="poly_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="sec_id" Type="int" />
-          <Property Name="lat_long" Type="varchar" MaxLength="80" />
+          <Property Name="lat_long" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="SECTORS">
           <Key>
             <PropertyRef Name="sec_id" />
           </Key>
           <Property Name="sec_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="sec_name" Type="varchar" MaxLength="20" />
+          <Property Name="sec_name" Type="varchar" MaxLength="50" />
           <Property Name="threshold" Type="int" />
           <Property Name="description" Type="varchar(max)" />
         </EntityType>
@@ -111,8 +112,8 @@
           <Property Name="case_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="user_id" Type="Int32" />
           <Property Name="status" Type="Boolean" />
-          <Property Name="startdate" Type="DateTime" Precision="0" />
-          <Property Name="enddate" Type="DateTime" Precision="0" />
+          <Property Name="startdate" Type="DateTime" Precision="3" />
+          <Property Name="enddate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="NOTIFICATION">
           <Key>
@@ -123,6 +124,7 @@
           <Property Name="title" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="type" Type="Boolean" />
           <Property Name="date" Type="DateTime" Precision="3" />
+          <Property Name="status" Type="Boolean" />
         </EntityType>
         <EntityType Name="POLYGON">
           <Key>
@@ -204,6 +206,7 @@
           <EntitySetMapping Name="NOTIFICATIONs">
             <EntityTypeMapping TypeName="ProjectModel.NOTIFICATION">
               <MappingFragment StoreEntitySet="NOTIFICATIONs">
+                <ScalarProperty Name="status" ColumnName="status" />
                 <ScalarProperty Name="notif_id" ColumnName="notif_id" />
                 <ScalarProperty Name="case_id" ColumnName="case_id" />
                 <ScalarProperty Name="title" ColumnName="title" />
