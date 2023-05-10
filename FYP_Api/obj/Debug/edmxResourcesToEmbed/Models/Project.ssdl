@@ -24,8 +24,8 @@
     <Property Name="case_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="user_id" Type="int" />
     <Property Name="status" Type="bit" />
-    <Property Name="startdate" Type="date" />
-    <Property Name="enddate" Type="date" />
+    <Property Name="startdate" Type="datetime" />
+    <Property Name="enddate" Type="datetime" />
   </EntityType>
   <EntityType Name="NOTIFICATIONs">
     <Key>
@@ -35,6 +35,7 @@
     <Property Name="case_id" Type="int" />
     <Property Name="title" Type="varchar" MaxLength="30" />
     <Property Name="type" Type="bit" />
+    <Property Name="status" Type="bit" />
     <Property Name="date" Type="datetime" />
   </EntityType>
   <EntityType Name="POLYGONS">
@@ -43,14 +44,14 @@
     </Key>
     <Property Name="poly_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="sec_id" Type="int" />
-    <Property Name="lat_long" Type="varchar" MaxLength="80" />
+    <Property Name="lat_long" Type="varchar(max)" />
   </EntityType>
   <EntityType Name="SECTORS">
     <Key>
       <PropertyRef Name="sec_id" />
     </Key>
     <Property Name="sec_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="sec_name" Type="varchar" MaxLength="20" />
+    <Property Name="sec_name" Type="varchar" MaxLength="50" />
     <Property Name="threshold" Type="int" />
     <Property Name="description" Type="varchar(max)" />
   </EntityType>

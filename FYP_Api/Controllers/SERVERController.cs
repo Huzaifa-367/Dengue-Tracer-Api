@@ -825,11 +825,22 @@ namespace FYP_Api.Controllers
             {
                 // Retrieve all sectors from the database
                 var sectors = db.SECTORS.ToList();
+
                 // Create a list to store the sector data as JSON objects
                 var sectorData = new List<object>();
+
                 // Loop through each sector and extract the necessary data
                 foreach (var sector in sectors)
                 {
+                    // Get the users in the current sector
+                    var usersInSector = db.USERs.Where(u => u.sec_id == sector.sec_id && u.role == "user");
+
+                    // Get the case logs for the users in the current sector
+                    var caseLogs = db.CASES_LOGS.Where(c => usersInSector.Any(u => u.user_id == c.user_id) && c.status == true);
+
+                    // Count the number of case logs in the current sector
+                    var numCases = caseLogs.Count();
+
                     var polygons = db.POLYGONS.Where(p => p.sec_id == sector.sec_id).ToList();
 
                     var latLongs = polygons.Select(p => p.lat_long).ToList();
@@ -840,7 +851,8 @@ namespace FYP_Api.Controllers
                         sec_name = sector.sec_name,
                         threshold = sector.threshold,
                         description = sector.description,
-                        latLongs = latLongs
+                        latLongs = latLongs,
+                        total_cases = numCases
                     };
 
                     sectorData.Add(sectorObject);
@@ -854,6 +866,7 @@ namespace FYP_Api.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
 
 
 
@@ -959,9 +972,10 @@ namespace FYP_Api.Controllers
         {
             try
             {
-                var lst = db.USERs.Where(u => u.role == "user");
-                var result = from u in lst
+                var result = from u in db.USERs
                              join s in db.SECTORS on u.sec_id equals s.sec_id
+                             let sector_users = db.USERs.Where(us => us.sec_id == u.sec_id)
+                             let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id) && c.status == true)
                              select new
                              {
                                  user_id = u.user_id,
@@ -979,7 +993,19 @@ namespace FYP_Api.Controllers
                                      description = s.description,
                                      latLongs = db.POLYGONS.Where(p => p.sec_id == s.sec_id)
                                                          .Select(p => p.lat_long)
-                                                         .ToList()
+                                                         .ToList(),
+                                     total_cases = sector_cases.Count(),
+                                     //sector_users = sector_users.Select(us => new
+                                     //{
+                                     //    us.user_id,
+                                     //    us.name,
+                                     //    us.email,
+                                     //    us.phone_number,
+                                     //    us.role,
+                                     //    us.home_location,
+                                     //    us.office_location,
+                                     //    total_cases = db.CASES_LOGS.Where(c => c.user_id == us.user_id && c.status == true).Count()
+                                     //}).ToList()
                                  }
                              };
                 return Request.CreateResponse(HttpStatusCode.OK, result);
@@ -989,6 +1015,11 @@ namespace FYP_Api.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+
+
+
+
 
 
         //----------------------------------------------------------------------------//
@@ -1004,6 +1035,9 @@ namespace FYP_Api.Controllers
                 var result = from u in lst
                              join a in db.ASSIGNSECTORS on u.user_id equals a.user_id
                              join s in db.SECTORS on a.sec_id equals s.sec_id
+                             let sector_users = db.USERs.Where(us => us.sec_id == s.sec_id)
+                             let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id) && c.status == true)
+
                              select new
                              {
                                  u.user_id,
@@ -1019,7 +1053,8 @@ namespace FYP_Api.Controllers
                                      s.sec_name,
                                      s.threshold,
                                      s.description,
-                                     latLongs = db.POLYGONS.Where(p => p.sec_id == s.sec_id).Select(p => p.lat_long).ToList()
+                                     latLongs = db.POLYGONS.Where(p => p.sec_id == s.sec_id).Select(p => p.lat_long).ToList(),
+                                     total_cases = sector_cases.Count(),
                                  }
                              };
 

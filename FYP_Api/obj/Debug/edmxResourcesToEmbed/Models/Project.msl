@@ -34,6 +34,7 @@
     <EntitySetMapping Name="NOTIFICATIONs">
       <EntityTypeMapping TypeName="ProjectModel.NOTIFICATION">
         <MappingFragment StoreEntitySet="NOTIFICATIONs">
+          <ScalarProperty Name="status" ColumnName="status" />
           <ScalarProperty Name="notif_id" ColumnName="notif_id" />
           <ScalarProperty Name="case_id" ColumnName="case_id" />
           <ScalarProperty Name="title" ColumnName="title" />
