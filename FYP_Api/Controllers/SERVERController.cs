@@ -135,11 +135,11 @@ namespace FYP_Api.Controllers
 
 
         [HttpPost]
-        public HttpResponseMessage CreateNotification(int case_id, bool status)
+        public HttpResponseMessage CreateNotification(int sec_id, bool status)
         {
             try
             {
-                var user = db.CASES_LOGS.Where(s => s.case_id == case_id).FirstOrDefault();
+                var user = db.CASES_LOGS.Where(s => s.case_id == sec_id).FirstOrDefault();
                 if (user == null)
                 {
                     DateTime dat = DateTime.Now;
@@ -147,7 +147,7 @@ namespace FYP_Api.Controllers
 
                     NOTIFICATION newCase = new NOTIFICATION();
 
-                    newCase.case_id = case_id;
+                    newCase.sec_id = sec_id;
                     newCase.type = false;
                     newCase.title = "New case in your area";
                     newCase.date = DateTime.Parse(dt);
@@ -868,8 +868,108 @@ namespace FYP_Api.Controllers
         }
 
 
+        //----------------------------------------------------------------------------//
 
 
+
+        [HttpGet]
+        public HttpResponseMessage GetUserSectors()
+        {
+            try
+            {
+                var result = from u in db.USERs
+                             join s in db.SECTORS on u.sec_id equals s.sec_id
+                             let sector_users = db.USERs.Where(us => us.sec_id == u.sec_id)
+                             let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id) && c.status == true)
+                             select new
+                             {
+                                 user_id = u.user_id,
+                                 name = u.name,
+                                 email = u.email,
+                                 phone_number = u.phone_number,
+                                 role = u.role,
+                                 home_location = u.home_location,
+                                 office_location = u.office_location,
+                                 sector = new
+                                 {
+                                     sec_id = s.sec_id,
+                                     sec_name = s.sec_name,
+                                     threshold = s.threshold,
+                                     description = s.description,
+                                     latLongs = db.POLYGONS.Where(p => p.sec_id == s.sec_id)
+                                                         .Select(p => p.lat_long)
+                                                         .ToList(),
+                                     total_cases = sector_cases.Count(),
+                                     //sector_users = sector_users.Select(us => new
+                                     //{
+                                     //    us.user_id,
+                                     //    us.name,
+                                     //    us.email,
+                                     //    us.phone_number,
+                                     //    us.role,
+                                     //    us.home_location,
+                                     //    us.office_location,
+                                     //    total_cases = db.CASES_LOGS.Where(c => c.user_id == us.user_id && c.status == true).Count()
+                                     //}).ToList()
+                                 }
+                             };
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
+
+
+
+
+
+        //----------------------------------------------------------------------------//
+
+
+
+        [HttpGet]
+        public HttpResponseMessage GetOfficerSectors()
+        {
+            try
+            {
+                var lst = db.USERs.Where(u => u.role == "officer");
+                var result = from u in lst
+                             join a in db.ASSIGNSECTORS on u.user_id equals a.user_id
+                             join s in db.SECTORS on a.sec_id equals s.sec_id
+                             let sector_users = db.USERs.Where(us => us.sec_id == s.sec_id)
+                             let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id) && c.status == true)
+
+                             select new
+                             {
+                                 u.user_id,
+                                 u.name,
+                                 u.email,
+                                 u.phone_number,
+                                 u.role,
+                                 u.home_location,
+                                 u.office_location,
+                                 sector = new
+                                 {
+                                     s.sec_id,
+                                     s.sec_name,
+                                     s.threshold,
+                                     s.description,
+                                     latLongs = db.POLYGONS.Where(p => p.sec_id == s.sec_id).Select(p => p.lat_long).ToList(),
+                                     total_cases = sector_cases.Count(),
+                                 }
+                             };
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
 
 
         //----------------------------------------------------------------------------//
@@ -892,8 +992,7 @@ namespace FYP_Api.Controllers
             }
         }
 
-        //----------------------------------------------------------------------------//
-
+        
         //----------------------------------------------------------------------------//
 
 
@@ -967,104 +1066,7 @@ namespace FYP_Api.Controllers
 
         //----------------------------------------------------------------------------//
 
-        [HttpGet]
-        public HttpResponseMessage GetUserSectors()
-        {
-            try
-            {
-                var result = from u in db.USERs
-                             join s in db.SECTORS on u.sec_id equals s.sec_id
-                             let sector_users = db.USERs.Where(us => us.sec_id == u.sec_id)
-                             let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id) && c.status == true)
-                             select new
-                             {
-                                 user_id = u.user_id,
-                                 name = u.name,
-                                 email = u.email,
-                                 phone_number = u.phone_number,
-                                 role = u.role,
-                                 home_location = u.home_location,
-                                 office_location = u.office_location,
-                                 sector = new
-                                 {
-                                     sec_id = s.sec_id,
-                                     sec_name = s.sec_name,
-                                     threshold = s.threshold,
-                                     description = s.description,
-                                     latLongs = db.POLYGONS.Where(p => p.sec_id == s.sec_id)
-                                                         .Select(p => p.lat_long)
-                                                         .ToList(),
-                                     total_cases = sector_cases.Count(),
-                                     //sector_users = sector_users.Select(us => new
-                                     //{
-                                     //    us.user_id,
-                                     //    us.name,
-                                     //    us.email,
-                                     //    us.phone_number,
-                                     //    us.role,
-                                     //    us.home_location,
-                                     //    us.office_location,
-                                     //    total_cases = db.CASES_LOGS.Where(c => c.user_id == us.user_id && c.status == true).Count()
-                                     //}).ToList()
-                                 }
-                             };
-                return Request.CreateResponse(HttpStatusCode.OK, result);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-
-
-
-
-
-
-
-        //----------------------------------------------------------------------------//
-
-
-
-        [HttpGet] 
-        public HttpResponseMessage GetOfficerSectors()
-        {
-            try
-            {
-                var lst = db.USERs.Where(u => u.role == "officer");
-                var result = from u in lst
-                             join a in db.ASSIGNSECTORS on u.user_id equals a.user_id
-                             join s in db.SECTORS on a.sec_id equals s.sec_id
-                             let sector_users = db.USERs.Where(us => us.sec_id == s.sec_id)
-                             let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id) && c.status == true)
-
-                             select new
-                             {
-                                 u.user_id,
-                                 u.name,
-                                 u.email,
-                                 u.phone_number,
-                                 u.role,
-                                 u.home_location,
-                                 u.office_location,
-                                 sector = new
-                                 {
-                                     s.sec_id,
-                                     s.sec_name,
-                                     s.threshold,
-                                     s.description,
-                                     latLongs = db.POLYGONS.Where(p => p.sec_id == s.sec_id).Select(p => p.lat_long).ToList(),
-                                     total_cases = sector_cases.Count(),
-                                 }
-                             };
-
-                return Request.CreateResponse(HttpStatusCode.OK, result);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
+       
 
 
     }

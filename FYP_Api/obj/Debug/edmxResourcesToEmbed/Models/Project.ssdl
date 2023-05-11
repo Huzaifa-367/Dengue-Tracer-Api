@@ -32,7 +32,8 @@
       <PropertyRef Name="notif_id" />
     </Key>
     <Property Name="notif_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="case_id" Type="int" />
+    <Property Name="user_id" Type="int" />
+    <Property Name="sec_id" Type="int" />
     <Property Name="title" Type="varchar" MaxLength="30" />
     <Property Name="type" Type="bit" />
     <Property Name="status" Type="bit" />
