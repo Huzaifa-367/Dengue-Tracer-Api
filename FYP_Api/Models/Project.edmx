@@ -29,7 +29,7 @@
           <Property Name="case_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="user_id" Type="int" />
           <Property Name="status" Type="bit" />
-          <Property Name="startdate" Type="datetime" />
+          <Property Name="startdate" Type="datetime" Nullable="false" />
           <Property Name="enddate" Type="datetime" />
         </EntityType>
         <EntityType Name="NOTIFICATIONs">
@@ -113,7 +113,7 @@
           <Property Name="case_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="user_id" Type="Int32" />
           <Property Name="status" Type="Boolean" />
-          <Property Name="startdate" Type="DateTime" Precision="3" />
+          <Property Name="startdate" Type="DateTime" Precision="3" Nullable="false" />
           <Property Name="enddate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="NOTIFICATION">

@@ -223,6 +223,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="HelperClasses\CasesHelperClass.cs" />
     <Compile Include="Models\ACTION_LOGS.cs">
       <DependentUpon>Project.tt</DependentUpon>
     </Compile>

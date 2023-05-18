@@ -1,4 +1,5 @@
-﻿using FYP_Api.Models;
+﻿using FYP_Api.HelperClasses;
+using FYP_Api.Models;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,13 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
+using System.Threading;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Http;
+using System.Web.Http.Results;
+using Windows.System;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml.Shapes;
 
 namespace FYP_Api.Controllers
@@ -102,7 +107,18 @@ namespace FYP_Api.Controllers
 
             try
             {
-                var user = db.CASES_LOGS.Where(s => s.user_id == user_id).FirstOrDefault();
+                //
+               //
+                if (!isRunning)
+                {
+                    isRunning = true;
+                    new Thread(setStatus).Start();
+                }
+                //
+               //
+               
+                var user = db.CASES_LOGS.Where(s => s.user_id == user_id ).FirstOrDefault();
+
                 if (user == null)
                 {
                     DateTime dat = DateTime.Now;
@@ -110,19 +126,50 @@ namespace FYP_Api.Controllers
 
                     //int range = 5;
                     //-------------------------------------------------
-                    CASES_LOGS newCase = new CASES_LOGS();
+                   
 
-                    newCase.user_id = user_id;
-                    newCase.status = status;
-                    newCase.startdate = DateTime.Parse(dt);
+                    user.user_id = user_id;
+                    user.status = status;
+
+                    user.startdate = DateTime.Parse(dt);
+
                     //newCase.range = range;
-                    db.CASES_LOGS.Add(newCase);
+                    db.CASES_LOGS.Add(user);
                     db.SaveChanges();
-                    return Request.CreateResponse(HttpStatusCode.OK, newCase);
+                   
 
                 }
+                else {
+                    if (user.enddate == null && status == false)
+                    {
+                        user.enddate = DateTime.Now;
+                     
+                    }
+                    else
+                    {
+                        DateTime dat = DateTime.Now;
+                        var dt = dat.Date.ToShortDateString();
+
+                        //int range = 5;
+                        //-------------------------------------------------
+
+
+                        user.user_id = user_id;
+                        user.status = status;
+
+                        user.startdate = DateTime.Parse(dt);
+
+                        //newCase.range = range;
+                        db.CASES_LOGS.Add(user);
+                        db.SaveChanges();
+                     
+                    }
+                    
+                }
+                
                 user.status = status;
                 db.SaveChanges();
+                new Thread(()=>setNotification(user_id)).Start();
                 return Request.CreateResponse(HttpStatusCode.OK, "Updated");
 
             }
@@ -134,58 +181,192 @@ namespace FYP_Api.Controllers
         }
 
 
-        [HttpPost]
-        public HttpResponseMessage CreateNotification(int sec_id, bool status)
+
+
+
+        private void setNotification(int userId)
         {
             try
             {
-                var user = db.CASES_LOGS.Where(s => s.case_id == sec_id).FirstOrDefault();
-                if (user == null)
-                {
-                    DateTime dat = DateTime.Now;
-                    var dt = dat.Date.ToShortDateString();
-
-                    NOTIFICATION newCase = new NOTIFICATION();
-
-                    newCase.sec_id = sec_id;
-                    newCase.type = false;
-                    newCase.title = "New case in your area";
-                    newCase.date = DateTime.Parse(dt);
-
-                    db.NOTIFICATIONs.Add(newCase);
-                    db.SaveChanges();
-
-                    //// Show a notification for the new case
-                    //string notificationText = "New case registered";
-                    //ShowNotification(notificationText);
-
-                    return Request.CreateResponse(HttpStatusCode.OK, newCase);
-                }
-
-                user.status = status;
+                var user = db.USERs.Find(userId);
+                var sector = db.SECTORS.Find(user.sec_id);
+                var cases = (from c in db.CASES_LOGS join u in db.USERs on c.user_id equals u.user_id where u.sec_id == user.sec_id select c).ToList();
+                var percentage = (cases.Count * 100) / sector.threshold > 75;
+                NOTIFICATION nOTIFICATION = new NOTIFICATION();
+                nOTIFICATION.date = DateTime.Now;
+                nOTIFICATION.title = percentage.ToString();
+                nOTIFICATION.sec_id = user.sec_id;
+                // nOTIFICATION.status = 0;
+                nOTIFICATION.user_id = user.user_id;
+                db.NOTIFICATIONs.Add(nOTIFICATION);
                 db.SaveChanges();
 
-                return Request.CreateResponse(HttpStatusCode.OK, "Updated");
+
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+
+
             }
         }
+
 
         [HttpGet]
-        public HttpResponseMessage ShowallNotifications()
+        public HttpResponseMessage ShowallNotifications(int user_id, int radius)
         {
             try
             {
-                var lst = db.NOTIFICATIONs.OrderByDescending(n => n.date).ToList();
-                return Request.CreateResponse(HttpStatusCode.OK, lst);
+                var user = db.USERs.Find(user_id);
+                List<NOTIFICATION> locationbased = new List<NOTIFICATION>();
+                List<NOTIFICATION> sectorBased = new List<NOTIFICATION>();
+
+                if (user.role == "user")
+                {
+                    sectorBased = db.NOTIFICATIONs.Where(s => s.sec_id == user.sec_id).ToList();
+
+                    foreach (var notification in db.NOTIFICATIONs)
+                    {
+                        var user2 = db.USERs.Find(notification.user_id);
+                        if (CalculateDistance(user.home_location.Split(',')[0], user.home_location.Split(',')[1], user2.home_location.Split(',')[0], user2.home_location.Split(',')[1]) <= radius)
+                        {
+                            locationbased.Add(notification);
+                        }
+
+                    }
+                }
+                else if (user.role == "officer")
+                {
+                    var sectors = db.ASSIGNSECTORS.Where(s => s.user_id == user.user_id).ToList();
+                    foreach (var sector in sectors)
+                    {
+                        sectorBased.AddRange(db.NOTIFICATIONs.Where(s => s.sec_id == sector.sec_id).ToList());
+                    }
+
+                }
+                else
+                {
+                    sectorBased = db.NOTIFICATIONs.ToList();
+
+
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    locationbased = locationbased.OrderByDescending(s => s.date),
+                    sectorBased = sectorBased.OrderByDescending(s => s.date)
+                });
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+
+
+        public double CalculateDistance(string lat1, string lon1, string lat2, string lon2)
+        {
+            // Radius of the Earth in kilometers
+            const double EarthRadius = 6371;
+
+            // Convert latitude and longitude to radians
+            double lat1Rad = ToRadians(double.Parse(lat1));
+            double lon1Rad = ToRadians(double.Parse(lon1));
+            double lat2Rad = ToRadians(double.Parse(lat2));
+            double lon2Rad = ToRadians(double.Parse(lon2));
+
+            // Calculate the differences in latitude and longitude
+            double latDiff = lat2Rad - lat1Rad;
+            double lonDiff = lon2Rad - lon1Rad;
+
+            // Calculate the haversine of half the latitudinal difference
+            double haversineLat = Math.Sin(latDiff / 2) * Math.Sin(latDiff / 2);
+
+            // Calculate the haversine of half the longitudinal difference
+            double haversineLon = Math.Sin(lonDiff / 2) * Math.Sin(lonDiff / 2);
+
+            // Calculate the square of the haversine of the angular distance
+            double haversine = haversineLat + Math.Cos(lat1Rad) * Math.Cos(lat2Rad) * haversineLon;
+
+            // Calculate the central angle using the inverse haversine function
+            double centralAngle = 2 * Math.Asin(Math.Sqrt(haversine));
+
+            // Calculate the distance using the central angle and the Earth's radius
+            double distance = EarthRadius * centralAngle;
+
+            return distance;
+        }
+
+        public double ToRadians(double degrees)
+        {
+            return degrees * Math.PI / 180;
+        }
+
+        /*
+                [HttpPost]
+                public HttpResponseMessage CreateNotification(int sec_id, bool status)
+                {
+                    try
+                    {
+                        var user = db.CASES_LOGS.Where(s => s.case_id == sec_id).FirstOrDefault();
+                        if (user == null)
+                        {
+                            DateTime dat = DateTime.Now;
+                            var dt = dat.Date.ToShortDateString();
+
+                            NOTIFICATION newCase = new NOTIFICATION();
+
+                            newCase.sec_id = sec_id;
+                            newCase.type = false;
+                            newCase.title = "New case in your area";
+                            newCase.date = DateTime.Parse(dt);
+
+                            db.NOTIFICATIONs.Add(newCase);
+                            db.SaveChanges();
+
+                            //// Show a notification for the new case
+                            //string notificationText = "New case registered";
+                            //ShowNotification(notificationText);
+
+                            return Request.CreateResponse(HttpStatusCode.OK, newCase);
+                        }
+
+                        user.status = status;
+                        db.SaveChanges();
+
+                        return Request.CreateResponse(HttpStatusCode.OK, "Updated");
+                    }
+                    catch (Exception ex)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                    }
+                }
+
+
+                [HttpPost]
+                public HttpResponseMessage CreateNotification(int user_id, int sec_id, string title, bool type, bool status)
+                {
+                    try
+                    {
+                        DateTime date = DateTime.Now.Date;
+                        NOTIFICATION newCase = new NOTIFICATION();
+
+                        newCase.user_id = user_id;
+                        newCase.sec_id = sec_id;
+                        newCase.title = title;
+                        newCase.type = type;
+                        newCase.status = status;
+                        newCase.date = date;
+
+                        db.NOTIFICATIONs.Add(newCase);
+                        db.SaveChanges();
+
+                        return Request.CreateResponse(HttpStatusCode.OK, newCase);
+                    }
+                    catch (Exception ex)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                    }
+                }*/
 
 
         //private void ShowNotification(string text)
@@ -416,17 +597,101 @@ namespace FYP_Api.Controllers
         {
             try
             {
+                List<CasesHelperClass> cases = new List<CasesHelperClass>();
+                var minimumDate = db.CASES_LOGS.OrderBy(s=>s.startdate).Select(s=>s.startdate).FirstOrDefault();
+
+                while (minimumDate <= DateTime.Now) {
+                    var v = new CasesHelperClass();
+                    v.count = db.CASES_LOGS.AsEnumerable().Where(s=>s.startdate.ToShortDateString()==minimumDate.ToShortDateString()).ToList().Count();
+                    v.count += db.CASES_LOGS.AsEnumerable().Where(s => s.startdate < minimumDate &&s.enddate==null&& s.startdate.ToShortDateString() != minimumDate.ToShortDateString()).Count();
+                    var vs = (db.CASES_LOGS.AsEnumerable().Where(s => s.startdate < minimumDate && s.enddate != null && s.startdate.ToShortDateString() != minimumDate.ToShortDateString()).Select(s => new { st = s.startdate, end = s.enddate }).FirstOrDefault());
+                    if (vs != null)
+                        if (vs.end != null)
+                        {
+                            if (vs.end > minimumDate)
+                                v.count += 1;
+                        }
+                    v.date = minimumDate;
+                    cases.Add(v);
+                    minimumDate = minimumDate.AddDays(1);
+                }
+                return Request.CreateResponse(HttpStatusCode.OK,new {cases= cases.OrderByDescending(s => s.date),
+                maxValue=cases.Max(s=>s.count)+5});
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+        private bool compareDate(DateTime dt1,DateTime dt2) {
+            try
+            {
+                if (dt1.ToShortDateString() == dt2.ToShortDateString()) {
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+
+               return false;
+            }
+        }
+        static bool isRunning=false;
+        private void setStatus()
+        {
+            try {
+                ProjectEntities db = new ProjectEntities();
+                var dt = DateTime.Now;
+                var currentDate = DateTime.Now.Date;
+                var startDateThreshold = currentDate.AddDays(-7);
+
+                var casesByDate = db.CASES_LOGS
+                    .AsEnumerable()
+                    .Where(c =>
+                        (c.enddate == null && DateTime.Now.Subtract(c.startdate).Days>=7)).ToList();
+                for (int i = 0; i < casesByDate.Count; i++)
+                {
+                    casesByDate[i].enddate = DateTime.Now;
+
+                }
+                db.SaveChanges();
+                Thread.Sleep(720000);
+                setStatus();
+            }
+            catch (Exception ex) { }
+        } 
+/*
+        [HttpGet]
+        public HttpResponseMessage GetDengueCasesByDatee()
+        {
+            try
+            {
+                ProjectEntities db = new ProjectEntities();
                 var lst = db.USERs.Where(u => u.role == "user");
                 var result = from u in lst
                              join c in db.CASES_LOGS on u.user_id equals c.user_id
                              join s in db.SECTORS on u.sec_id equals s.sec_id
-                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.sec_id, s.sec_name, c.startdate, c.status };
+                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.sec_id, s.sec_name, c.startdate, c.enddate, c.status };
 
-                var casesByDate = result
-                    .GroupBy(c => c.startdate) // Group cases by date
-                    .Select(g => new { Date = g.Key, Count = g.Count() }) // Project to date and count
-                    .OrderBy(d => d.Date); // Order by date
-               // var cases = casesByDate.OrderByDescending(n=> n.Date);
+                var currentDate = DateTime.Now.Date;
+                var startDateThreshold = currentDate.AddDays(-7);
+
+                var cases = db.CASES_LOGS.Where(s=>s.startdate==DateTime.Now||s.enddate==null).ToList();
+                var d = new {
+                    Date = DateTime.Now,
+                    count = cases.Count
+                };// Order by date
+
+                // Update enddate for cases with null enddate that have exceeded 6 days
+                var casesToUpdate = result
+                    .Where(c => c.enddate == null && c.startdate <= startDateThreshold.AddDays(-6))
+                    .ToList();
+
+             
+
+                db.SaveChanges();
+
                 return Request.CreateResponse(HttpStatusCode.OK, casesByDate.OrderByDescending(n => n.Date));
             }
             catch (Exception ex)
@@ -434,6 +699,10 @@ namespace FYP_Api.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+*/
+
+
+
 
 
 
@@ -449,7 +718,7 @@ namespace FYP_Api.Controllers
                              select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.sec_id, s.sec_name, c.startdate, c.status };
 
                 var casesByMonth = result
-                    .GroupBy(c => new { Year = c.startdate.HasValue ? c.startdate.Value.Year : (int?)null, Month = c.startdate.HasValue ? c.startdate.Value.Month : (int?)null })
+                    .GroupBy(c => new { Year =  c.startdate.Year , Month = c.startdate.Month  })
                     .Select(g => new { Month = $"{g.Key.Year}-{g.Key.Month:D2}", Count = g.Count() })
                     .OrderBy(d => d.Month);
 
@@ -473,7 +742,7 @@ namespace FYP_Api.Controllers
                              select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.sec_id, s.sec_name, c.startdate, c.status };
 
                 var casesByYear = result
-                                  .GroupBy(c => new { Year = c.startdate.HasValue ? c.startdate.Value.Year : (int?)null })
+                                  .GroupBy(c => new { Year = c.startdate.Year })
                                   .Select(g => new { Year = g.Key.Year.ToString(), Count = g.Count() })
                                   .OrderBy(d => d.Year);
 
@@ -517,7 +786,7 @@ namespace FYP_Api.Controllers
                 DateTime toDate = DateTime.ParseExact(to, "yyyy-MM-dd", CultureInfo.InvariantCulture).AddDays(1);
 
                 var casesInRange = db.CASES_LOGS
-                    .Where(c => c.startdate.HasValue && c.startdate.Value >= fromDate && c.startdate.Value < toDate)
+                    .Where(c => c.startdate >= fromDate && c.startdate < toDate)
                     .GroupBy(c => DbFunctions.TruncateTime(c.startdate))
                     .Select(g => new { Date = g.Key, Count = g.Count() })
                     .OrderBy(d => d.Date);
