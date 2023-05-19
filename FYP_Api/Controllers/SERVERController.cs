@@ -24,7 +24,7 @@ namespace FYP_Api.Controllers
 {
     public class SERVERController : ApiController
     {
-
+        
         private readonly ProjectEntities db = new ProjectEntities();
 
 
@@ -637,7 +637,13 @@ namespace FYP_Api.Controllers
                return false;
             }
         }
+
+
+
+
         static bool isRunning=false;
+
+
         private void setStatus()
         {
             try {
