@@ -5,7 +5,7 @@
 [![GitHub Issues](https://img.shields.io/github/issues/LarsKhan/dengue-tracer-api.svg?style=flat-square&logo=github)](https://github.com/LarsKhan/dengue-tracer-api/issues)
 [![GitHub License](https://img.shields.io/github/license/LarsKhan/dengue-tracer-api.svg?style=flat-square&logo=github)](https://github.com/LarsKhan/dengue-tracer-api/blob/main/LICENSE)
 
-![Dengue Tracer API](https://img.shields.io/badge/Dengue-Tracer-orange?style=flat-square)
+
 ![Flutter](https://img.shields.io/badge/Framework-Flutter-blue?style=flat-square&logo=flutter)
 ![C#](https://img.shields.io/badge/Language-C%23-brightgreen?style=flat-square&logo=c-sharp)
 ![Microsoft SQL Server](https://img.shields.io/badge/Database-SQL%20Server-lightgrey?style=flat-square&logo=microsoft-sql-server)
@@ -47,10 +47,6 @@ Dengue Tracer API is the backend server for the Dengue Tracer Flutter project. I
 
    - The API will be running at `http://localhost:5000` by default.
    - Use an API testing tool like Postman to interact with the endpoints.
-
-## :book: Documentation
-
-API documentation and endpoint details can be found in the [API Documentation](https://github.com/LarsKhan/dengue-tracer-api/) wiki of this repository.
 
 ## :rocket: Contributing
 
