@@ -591,38 +591,44 @@ namespace FYP_Api.Controllers
         //----------------------------------------------------------------------------//
 
 
-
         [HttpGet]
-        public HttpResponseMessage GetDengueCasesByDate()
+        public IHttpActionResult GetDengueCasesByDate()
         {
             try
             {
                 List<CasesHelperClass> cases = new List<CasesHelperClass>();
-                var minimumDate = db.CASES_LOGS.OrderBy(s=>s.startdate).Select(s=>s.startdate).FirstOrDefault();
+                DateTime currentDate = DateTime.Now.Date;
 
-                while (minimumDate <= DateTime.Now) {
-                    var v = new CasesHelperClass();
-                    v.count = db.CASES_LOGS.AsEnumerable().Where(s=>s.startdate.ToShortDateString()==minimumDate.ToShortDateString()).ToList().Count();
-                    v.count += db.CASES_LOGS.AsEnumerable().Where(s => s.startdate < minimumDate &&s.enddate==null&& s.startdate.ToShortDateString() != minimumDate.ToShortDateString()).Count();
-                    var vs = (db.CASES_LOGS.AsEnumerable().Where(s => s.startdate < minimumDate && s.enddate != null && s.startdate.ToShortDateString() != minimumDate.ToShortDateString()).Select(s => new { st = s.startdate, end = s.enddate }).FirstOrDefault());
-                    if (vs != null)
-                        if (vs.end != null)
-                        {
-                            if (vs.end > minimumDate)
-                                v.count += 1;
-                        }
-                    v.date = minimumDate;
-                    cases.Add(v);
+                var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
+
+                while (minimumDate <= currentDate)
+                {
+                    CasesHelperClass caseData = new CasesHelperClass();
+                    caseData.date = minimumDate;
+
+                    // Calculate the count for the current date
+                    caseData.count = db.CASES_LOGS.AsEnumerable()
+                        .Count(s => s.startdate.Date == minimumDate.Date ||
+                                    (s.startdate.Date < minimumDate.Date && (s.enddate == null || s.enddate >= minimumDate)));
+
+                    cases.Add(caseData);
                     minimumDate = minimumDate.AddDays(1);
                 }
-                return Request.CreateResponse(HttpStatusCode.OK,new {cases= cases.OrderByDescending(s => s.date),
-                maxValue=cases.Max(s=>s.count)+5});
+
+                var result = new
+                {
+                    cases = cases.OrderByDescending(s => s.date),
+                    maxValue = cases.Max(s => s.count) + 5
+                };
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return InternalServerError(ex);
             }
         }
+
         private bool compareDate(DateTime dt1,DateTime dt2) {
             try
             {
