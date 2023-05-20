@@ -101,81 +101,50 @@ namespace FYP_Api.Controllers
 
 
         [HttpPost]
-
         public HttpResponseMessage UpdateUserStatus(int user_id, bool status)
         {
-
             try
             {
-                //
-               //
                 if (!isRunning)
                 {
                     isRunning = true;
                     new Thread(setStatus).Start();
                 }
-                //
-               //
-               
-                var user = db.CASES_LOGS.Where(s => s.user_id == user_id ).FirstOrDefault();
+
+                var user = db.CASES_LOGS.FirstOrDefault(s => s.user_id == user_id);
 
                 if (user == null)
                 {
-                    DateTime dat = DateTime.Now;
-                    var dt = dat.Date.ToShortDateString();
-
-                    //int range = 5;
-                    //-------------------------------------------------
-                   
-
+                    user = new CASES_LOGS(); // Create a new instance of CASES_LOGS
                     user.user_id = user_id;
                     user.status = status;
-
-                    user.startdate = DateTime.Parse(dt);
-
-                    //newCase.range = range;
+                    user.startdate = DateTime.Now.Date;
                     db.CASES_LOGS.Add(user);
-                    db.SaveChanges();
-                   
-
                 }
-                else {
+                else
+                {
                     if (user.enddate == null && status == false)
                     {
                         user.enddate = DateTime.Now;
-                     
                     }
                     else
                     {
-                        DateTime dat = DateTime.Now;
-                        var dt = dat.Date.ToShortDateString();
-
-                        //int range = 5;
-                        //-------------------------------------------------
-
-
+                        user = new CASES_LOGS(); // Create a new instance of CASES_LOGS
                         user.user_id = user_id;
                         user.status = status;
-
-                        user.startdate = DateTime.Parse(dt);
-
-                        //newCase.range = range;
+                        user.startdate = DateTime.Now.Date;
                         db.CASES_LOGS.Add(user);
-                        db.SaveChanges();
-                     
                     }
-                    
                 }
-                
-                user.status = status;
-                db.SaveChanges();
-                new Thread(()=>setNotification(user_id)).Start();
-                return Request.CreateResponse(HttpStatusCode.OK, "Updated");
 
+                db.SaveChanges();
+
+                new Thread(() => SetNotification(user_id)).Start();
+
+                return Request.CreateResponse(HttpStatusCode.OK, "Updated");
             }
             catch (Exception ex)
             {
-
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -184,40 +153,111 @@ namespace FYP_Api.Controllers
 
 
 
-        private void setNotification(int userId)
+
+
+        private void SetNotification(int userId)
         {
             try
             {
                 var user = db.USERs.Find(userId);
                 var sector = db.SECTORS.Find(user.sec_id);
-                var cases = (from c in db.CASES_LOGS join u in db.USERs on c.user_id equals u.user_id where u.sec_id == user.sec_id select c).ToList();
-                var percentage = (cases.Count * 100) / sector.threshold > 75;
+                var cases = (from c in db.CASES_LOGS
+                             join u in db.USERs on c.user_id equals u.user_id
+                             where u.sec_id == user.sec_id
+                             select c).ToList();
+                var percentage = (cases.Count * 100) / sector.threshold;
+
                 NOTIFICATION nOTIFICATION = new NOTIFICATION();
                 nOTIFICATION.date = DateTime.Now;
-                nOTIFICATION.title = percentage.ToString();
-                nOTIFICATION.sec_id = user.sec_id;
-                // nOTIFICATION.status = 0;
-                nOTIFICATION.user_id = user.user_id;
-                db.NOTIFICATIONs.Add(nOTIFICATION);
-                db.SaveChanges();
+                if (percentage==25) {
+                    nOTIFICATION.percnt = percentage;
+                    nOTIFICATION.sec_id = user.sec_id;
+                    nOTIFICATION.status = 0;
+                    nOTIFICATION.user_id = user.user_id;
 
+                    db.NOTIFICATIONs.Add(nOTIFICATION);
+                    db.SaveChanges();
+
+                }
+                if (percentage == 50)
+                {
+                    nOTIFICATION.percnt = percentage;
+                    nOTIFICATION.sec_id = user.sec_id;
+                    nOTIFICATION.status = 0;
+                    nOTIFICATION.user_id = user.user_id;
+
+                    db.NOTIFICATIONs.Add(nOTIFICATION);
+                    db.SaveChanges();
+
+                }
+                if (percentage == 75)
+                {
+                    nOTIFICATION.percnt = percentage;
+                    nOTIFICATION.sec_id = user.sec_id;
+                    nOTIFICATION.status = 0;
+                    nOTIFICATION.user_id = user.user_id;
+
+                    db.NOTIFICATIONs.Add(nOTIFICATION);
+                    db.SaveChanges();
+
+                }
+                if (percentage == 85 )
+                {
+                    nOTIFICATION.percnt = percentage;
+                    nOTIFICATION.sec_id = user.sec_id;
+                    nOTIFICATION.status = 0;
+                    nOTIFICATION.user_id = user.user_id;
+                    nOTIFICATION.type = true;
+
+                    db.NOTIFICATIONs.Add(nOTIFICATION);
+                    db.SaveChanges();
+
+                }
+                if (percentage == 95)
+                {
+                    nOTIFICATION.percnt = percentage;
+                    nOTIFICATION.sec_id = user.sec_id;
+                    nOTIFICATION.status = 0;
+                    nOTIFICATION.user_id = user.user_id;
+                    nOTIFICATION.type = true;
+
+
+                    db.NOTIFICATIONs.Add(nOTIFICATION);
+                    db.SaveChanges();
+
+                }
+
+                if (percentage > 95 && percentage <= 100)
+                {
+                    nOTIFICATION.percnt = percentage;
+                    nOTIFICATION.sec_id = user.sec_id;
+                    nOTIFICATION.status = 0;
+                    nOTIFICATION.user_id = user.user_id;
+                    nOTIFICATION.type = true;
+
+
+                    db.NOTIFICATIONs.Add(nOTIFICATION);
+                    db.SaveChanges();
+
+                }
 
             }
             catch (Exception ex)
             {
-
-
+                // Handle the exception accordingly
+                // For example, log the error or display a message
             }
         }
 
 
+
         [HttpGet]
-        public HttpResponseMessage ShowallNotifications(int user_id, int radius)
+        public HttpResponseMessage ShowallNotifications(int user_id, int? radius)
         {
             try
             {
                 var user = db.USERs.Find(user_id);
-                List<NOTIFICATION> locationbased = new List<NOTIFICATION>();
+                List<NOTIFICATION> locationBased = new List<NOTIFICATION>();
                 List<NOTIFICATION> sectorBased = new List<NOTIFICATION>();
 
                 if (user.role == "user")
@@ -229,9 +269,8 @@ namespace FYP_Api.Controllers
                         var user2 = db.USERs.Find(notification.user_id);
                         if (CalculateDistance(user.home_location.Split(',')[0], user.home_location.Split(',')[1], user2.home_location.Split(',')[0], user2.home_location.Split(',')[1]) <= radius)
                         {
-                            locationbased.Add(notification);
+                            locationBased.Add(notification);
                         }
-
                     }
                 }
                 else if (user.role == "officer")
@@ -241,18 +280,21 @@ namespace FYP_Api.Controllers
                     {
                         sectorBased.AddRange(db.NOTIFICATIONs.Where(s => s.sec_id == sector.sec_id).ToList());
                     }
-
                 }
                 else
                 {
                     sectorBased = db.NOTIFICATIONs.ToList();
-
-
                 }
+
+                var locationBasedCount = locationBased.Count;
+                var sectorBasedCount = sectorBased.Count;
+
                 return Request.CreateResponse(HttpStatusCode.OK, new
                 {
-                    locationbased = locationbased.OrderByDescending(s => s.date),
-                    sectorBased = sectorBased.OrderByDescending(s => s.date)
+                    locationBased = locationBased.OrderByDescending(s => s.date),
+                    sectorBased = sectorBased.OrderByDescending(s => s.date),
+                    locationBasedCount,
+                    sectorBasedCount
                 });
             }
             catch (Exception ex)
@@ -260,6 +302,91 @@ namespace FYP_Api.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+
+
+
+
+
+
+        [HttpGet]
+        public HttpResponseMessage ShowallNotifications2(int user_id, int? radius)
+        {
+            try
+            {
+                var user = db.USERs.Find(user_id);
+                List<NOTIFICATION> locationBased = new List<NOTIFICATION>();
+                List<NOTIFICATION> sectorBased = new List<NOTIFICATION>();
+
+                if (user.role == "user")
+                {
+                    sectorBased = db.NOTIFICATIONs.Where(s => s.sec_id == user.sec_id).ToList();
+
+                    foreach (var notification in db.NOTIFICATIONs)
+                    {
+                        var user2 = db.USERs.Find(notification.user_id);
+                        if (CalculateDistance(user.home_location.Split(',')[0], user.home_location.Split(',')[1], user2.home_location.Split(',')[0], user2.home_location.Split(',')[1]) <= radius)
+                        {
+                            locationBased.Add(notification);
+                        }
+                    }
+                }
+                else if (user.role == "officer")
+                {
+                    var sectors = db.ASSIGNSECTORS.Where(s => s.user_id == user.user_id).ToList();
+                    foreach (var sector in sectors)
+                    {
+                        sectorBased.AddRange(db.NOTIFICATIONs.Where(s => s.sec_id == sector.sec_id).ToList());
+                    }
+                }
+                else
+                {
+                    sectorBased = db.NOTIFICATIONs.ToList();
+                }
+
+                var locationBasedCount = locationBased.Count;
+                var sectorBasedCount = sectorBased.Count;
+
+                var locationBasedResponse = locationBased.OrderByDescending(s => s.date)
+                    .Select(s => new
+                    {
+                        s.date,
+                        //s.percnt,
+                        s.type,
+                        s.status,
+                       // s.sec_id,
+                       // sec_name = db.SECTORS.Find(s.sec_id)?.sec_name
+                    });
+
+                var sectorBasedResponse = sectorBased.OrderByDescending(s => s.date)
+                    .Select(s => new
+                    {
+                        s.date,
+                        s.percnt,
+                        s.type,
+                        s.status,
+                       // s.sec_id,
+                        sec_name = db.SECTORS.Find(s.sec_id)?.sec_name
+                    });
+
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    locationBased = locationBasedResponse,
+                    sectorBased = sectorBasedResponse,
+                    locationBasedCount,
+                    sectorBasedCount
+                });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
+
+
+
 
 
 
@@ -629,7 +756,7 @@ namespace FYP_Api.Controllers
             }
         }
 
-        private bool compareDate(DateTime dt1,DateTime dt2) {
+        /*private bool compareDate(DateTime dt1,DateTime dt2) {
             try
             {
                 if (dt1.ToShortDateString() == dt2.ToShortDateString()) {
@@ -643,7 +770,7 @@ namespace FYP_Api.Controllers
                return false;
             }
         }
-
+*/
 
 
 

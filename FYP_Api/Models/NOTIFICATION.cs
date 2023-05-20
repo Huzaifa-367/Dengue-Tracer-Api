@@ -15,11 +15,11 @@ namespace FYP_Api.Models
     public partial class NOTIFICATION
     {
         public int notif_id { get; set; }
-        public string title { get; set; }
         public Nullable<bool> type { get; set; }
         public Nullable<System.DateTime> date { get; set; }
-        public Nullable<bool> status { get; set; }
+        public Nullable<short> status { get; set; }
         public Nullable<int> user_id { get; set; }
         public Nullable<int> sec_id { get; set; }
+        public Nullable<int> percnt { get; set; }
     }
 }

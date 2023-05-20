@@ -32,12 +32,12 @@
       <PropertyRef Name="notif_id" />
     </Key>
     <Property Name="notif_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="title" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
     <Property Name="type" Type="Boolean" />
     <Property Name="date" Type="DateTime" Precision="3" />
-    <Property Name="status" Type="Boolean" />
+    <Property Name="status" Type="Int16" />
     <Property Name="user_id" Type="Int32" />
     <Property Name="sec_id" Type="Int32" />
+    <Property Name="percnt" Type="Int32" />
   </EntityType>
   <EntityType Name="POLYGON">
     <Key>

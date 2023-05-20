@@ -34,9 +34,9 @@
     <Property Name="notif_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="user_id" Type="int" />
     <Property Name="sec_id" Type="int" />
-    <Property Name="title" Type="varchar" MaxLength="30" />
+    <Property Name="percnt" Type="int" />
     <Property Name="type" Type="bit" />
-    <Property Name="status" Type="bit" />
+    <Property Name="status" Type="int" />
     <Property Name="date" Type="datetime" />
   </EntityType>
   <EntityType Name="POLYGONS">
