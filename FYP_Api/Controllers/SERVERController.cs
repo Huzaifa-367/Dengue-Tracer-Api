@@ -1208,29 +1208,30 @@ namespace FYP_Api.Controllers
                     minimumDate = minimumDate.AddDays(1);
                 }
 
-                // Retrieve users based on the selected date
+                // Retrieve users for the selected date
                 var usersQuery = db.USERs
-                    .Where(u => u.role == "user")
-                    .Join(db.CASES_LOGS, u => u.user_id, c => c.user_id, (u, c) => new { u, c })
-                    .Join(db.SECTORS, x => x.u.sec_id, s => s.sec_id, (x, s) => new { x.u, x.c, s })
-                    .Where(x => DbFunctions.TruncateTime(x.c.startdate) == DbFunctions.TruncateTime(currentDate) &&
-                                (x.c.enddate == null || DbFunctions.TruncateTime(x.c.enddate) >= DbFunctions.TruncateTime(currentDate)))
-                    .Select(x => new UserInfo
-                    {
-                        user_id = x.u.user_id,
-                        name = x.u.name,
-                        email = x.u.email,
-                        phone_number = x.u.phone_number,
-                        role = x.u.role,
-                        home_location = x.u.home_location,
-                        office_location = x.u.office_location,
-                        sec_id = (int)x.u.sec_id,
-                        sec_name = x.s.sec_name,
-                        description = x.s.description,
-                        startdate = x.c.startdate,
-                        status = (bool)x.c.status,
-                        enddate = x.c.enddate
-                    });
+    .Where(u => u.role == "user")
+    .Join(db.CASES_LOGS, u => u.user_id, c => c.user_id, (u, c) => new { u, c })
+    .Join(db.SECTORS, x => x.u.sec_id, s => s.sec_id, (x, s) => new { x.u, x.c, s })
+    .Where(x => DbFunctions.TruncateTime(x.c.startdate) == DbFunctions.TruncateTime(currentDate) &&
+                (x.c.enddate == null || DbFunctions.TruncateTime(x.c.enddate) >= DbFunctions.TruncateTime(currentDate) || x.c.enddate > currentDate))
+    .Select(x => new UserInfo
+    {
+        user_id = x.u.user_id,
+        name = x.u.name,
+        email = x.u.email,
+        phone_number = x.u.phone_number,
+        role = x.u.role,
+        home_location = x.u.home_location,
+        office_location = x.u.office_location,
+        sec_id = (int)x.u.sec_id,
+        sec_name = x.s.sec_name,
+        description = x.s.description,
+        startdate = x.c.startdate,
+        status = (bool)x.c.status,
+        enddate = x.c.enddate
+    });
+
 
                 users = usersQuery.ToList();
 
@@ -1248,6 +1249,7 @@ namespace FYP_Api.Controllers
                 return InternalServerError(ex);
             }
         }
+
 
 
 
