@@ -4,6 +4,8 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity.SqlServer;
 using System.Data.Entity.Validation;
 using System.Globalization;
 using System.Linq;
@@ -20,11 +22,14 @@ using Windows.System;
 using Windows.UI.Notifications;
 using Windows.UI.Xaml.Shapes;
 
+
+
+
 namespace FYP_Api.Controllers
 {
     public class SERVERController : ApiController
     {
-        
+
         private readonly ProjectEntities db = new ProjectEntities();
 
 
@@ -169,7 +174,8 @@ namespace FYP_Api.Controllers
 
                 NOTIFICATION nOTIFICATION = new NOTIFICATION();
                 nOTIFICATION.date = DateTime.Now;
-                if (percentage==25) {
+                if (percentage == 25)
+                {
                     nOTIFICATION.percnt = percentage;
                     nOTIFICATION.sec_id = user.sec_id;
                     nOTIFICATION.status = 0;
@@ -201,7 +207,7 @@ namespace FYP_Api.Controllers
                     db.SaveChanges();
 
                 }
-                if (percentage == 85 )
+                if (percentage == 85)
                 {
                     nOTIFICATION.percnt = percentage;
                     nOTIFICATION.sec_id = user.sec_id;
@@ -251,58 +257,58 @@ namespace FYP_Api.Controllers
 
 
 
-        [HttpGet]
-        public HttpResponseMessage ShowallNotifications(int user_id, int? radius)
-        {
-            try
-            {
-                var user = db.USERs.Find(user_id);
-                List<NOTIFICATION> locationBased = new List<NOTIFICATION>();
-                List<NOTIFICATION> sectorBased = new List<NOTIFICATION>();
+        /*  [HttpGet]
+          public HttpResponseMessage ShowallNotifications(int user_id, int? radius)
+          {
+              try
+              {
+                  var user = db.USERs.Find(user_id);
+                  List<NOTIFICATION> locationBased = new List<NOTIFICATION>();
+                  List<NOTIFICATION> sectorBased = new List<NOTIFICATION>();
 
-                if (user.role == "user")
-                {
-                    sectorBased = db.NOTIFICATIONs.Where(s => s.sec_id == user.sec_id).ToList();
+                  if (user.role == "user")
+                  {
+                      sectorBased = db.NOTIFICATIONs.Where(s => s.sec_id == user.sec_id).ToList();
 
-                    foreach (var notification in db.NOTIFICATIONs)
-                    {
-                        var user2 = db.USERs.Find(notification.user_id);
-                        if (CalculateDistance(user.home_location.Split(',')[0], user.home_location.Split(',')[1], user2.home_location.Split(',')[0], user2.home_location.Split(',')[1]) <= radius)
-                        {
-                            locationBased.Add(notification);
-                        }
-                    }
-                }
-                else if (user.role == "officer")
-                {
-                    var sectors = db.ASSIGNSECTORS.Where(s => s.user_id == user.user_id).ToList();
-                    foreach (var sector in sectors)
-                    {
-                        sectorBased.AddRange(db.NOTIFICATIONs.Where(s => s.sec_id == sector.sec_id).ToList());
-                    }
-                }
-                else
-                {
-                    sectorBased = db.NOTIFICATIONs.ToList();
-                }
+                      foreach (var notification in db.NOTIFICATIONs)
+                      {
+                          var user2 = db.USERs.Find(notification.user_id);
+                          if (CalculateDistance(user.home_location.Split(',')[0], user.home_location.Split(',')[1], user2.home_location.Split(',')[0], user2.home_location.Split(',')[1]) <= radius)
+                          {
+                              locationBased.Add(notification);
+                          }
+                      }
+                  }
+                  else if (user.role == "officer")
+                  {
+                      var sectors = db.ASSIGNSECTORS.Where(s => s.user_id == user.user_id).ToList();
+                      foreach (var sector in sectors)
+                      {
+                          sectorBased.AddRange(db.NOTIFICATIONs.Where(s => s.sec_id == sector.sec_id).ToList());
+                      }
+                  }
+                  else
+                  {
+                      sectorBased = db.NOTIFICATIONs.ToList();
+                  }
 
-                var locationBasedCount = locationBased.Count;
-                var sectorBasedCount = sectorBased.Count;
+                  var locationBasedCount = locationBased.Count;
+                  var sectorBasedCount = sectorBased.Count;
 
-                return Request.CreateResponse(HttpStatusCode.OK, new
-                {
-                    locationBased = locationBased.OrderByDescending(s => s.date),
-                    sectorBased = sectorBased.OrderByDescending(s => s.date),
-                    locationBasedCount,
-                    sectorBasedCount
-                });
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-
+                  return Request.CreateResponse(HttpStatusCode.OK, new
+                  {
+                      locationBased = locationBased.OrderByDescending(s => s.date),
+                      sectorBased = sectorBased.OrderByDescending(s => s.date),
+                      locationBasedCount,
+                      sectorBasedCount
+                  });
+              }
+              catch (Exception ex)
+              {
+                  return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+              }
+          }
+  */
 
 
 
@@ -354,8 +360,8 @@ namespace FYP_Api.Controllers
                         //s.percnt,
                         s.type,
                         s.status,
-                       // s.sec_id,
-                       // sec_name = db.SECTORS.Find(s.sec_id)?.sec_name
+                        s.sec_id,
+                        // sec_name = db.SECTORS.Find(s.sec_id)?.sec_name
                     });
 
                 var sectorBasedResponse = sectorBased.OrderByDescending(s => s.date)
@@ -365,7 +371,7 @@ namespace FYP_Api.Controllers
                         s.percnt,
                         s.type,
                         s.status,
-                       // s.sec_id,
+                        s.sec_id,
                         sec_name = db.SECTORS.Find(s.sec_id)?.sec_name
                     });
 
@@ -382,10 +388,6 @@ namespace FYP_Api.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
-
-
-
-
 
 
 
@@ -427,6 +429,9 @@ namespace FYP_Api.Controllers
         {
             return degrees * Math.PI / 180;
         }
+
+
+
 
         /*
                 [HttpPost]
@@ -555,6 +560,11 @@ namespace FYP_Api.Controllers
         {
             try
             {
+                if (!isRunning)
+                {
+                    isRunning = true;
+                    new Thread(setStatus).Start();
+                }
                 var user = db.USERs.Where(s => s.email == email && s.password == password).FirstOrDefault();
                 if (user == null)
                 {
@@ -571,24 +581,39 @@ namespace FYP_Api.Controllers
                                  where u.email == email && u.password == password
                                  select new
                                  {
-                                     u.user_id, u.name, u.email, u.phone_number, u.image, u.role,
-                                     u.home_location, u.office_location,u.sec_id,
-                                     s.sec_name, s.description,
+                                     u.user_id,
+                                     u.name,
+                                     u.email,
+                                     u.phone_number,
+                                     u.image,
+                                     u.role,
+                                     u.home_location,
+                                     u.office_location,
+                                     u.sec_id,
+                                     s.sec_name,
+                                     s.description,
                                      startdate = (DateTime?)c.startdate,
                                      status = (bool?)(c != null ? c.status : false),
                                      enddate = (DateTime?)c.enddate
                                  };
-                return Request.CreateResponse(HttpStatusCode.OK, result);
+                    return Request.CreateResponse(HttpStatusCode.OK, result);
                 }
                 else
                 {
 
                     var admin = from u in db.USERs.Where(s => s.email == email && s.password == password)
-                    select new
-                               {
-                                   u.user_id, u.image, u.name,u.email, u.phone_number,
-                                   u.role, u.home_location, u.office_location, u.sec_id,
-                               };
+                                select new
+                                {
+                                    u.user_id,
+                                    u.image,
+                                    u.name,
+                                    u.email,
+                                    u.phone_number,
+                                    u.role,
+                                    u.home_location,
+                                    u.office_location,
+                                    u.sec_id,
+                                };
                     return Request.CreateResponse(HttpStatusCode.OK, admin);
                 }
             }
@@ -715,6 +740,80 @@ namespace FYP_Api.Controllers
             }
         }
 
+
+
+
+
+        static bool isRunning = false;
+
+
+        private void setStatus()
+        {
+            try
+            {
+                ProjectEntities db = new ProjectEntities();
+                var dt = DateTime.Now;
+                var currentDate = DateTime.Now.Date;
+                var startDateThreshold = currentDate.AddDays(-7);
+
+                var casesByDate = db.CASES_LOGS
+                    .AsEnumerable()
+                    .Where(c =>
+                        (c.enddate == null && DateTime.Now.Subtract(c.startdate).Days >= 7)).ToList();
+                for (int i = 0; i < casesByDate.Count; i++)
+                {
+                    casesByDate[i].enddate = DateTime.Now;
+
+                }
+                db.SaveChanges();
+                Thread.Sleep(720000);
+                setStatus();
+            }
+            catch (Exception ex) { }
+        }
+        /*
+                [HttpGet]
+                public HttpResponseMessage GetDengueCasesByDatee()
+                {
+                    try
+                    {
+                        ProjectEntities db = new ProjectEntities();
+                        var lst = db.USERs.Where(u => u.role == "user");
+                        var result = from u in lst
+                                     join c in db.CASES_LOGS on u.user_id equals c.user_id
+                                     join s in db.SECTORS on u.sec_id equals s.sec_id
+                                     select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.sec_id, s.sec_name, c.startdate, c.enddate, c.status };
+
+                        var currentDate = DateTime.Now.Date;
+                        var startDateThreshold = currentDate.AddDays(-7);
+
+                        var cases = db.CASES_LOGS.Where(s=>s.startdate==DateTime.Now||s.enddate==null).ToList();
+                        var d = new {
+                            Date = DateTime.Now,
+                            count = cases.Count
+                        };// Order by date
+
+                        // Update enddate for cases with null enddate that have exceeded 6 days
+                        var casesToUpdate = result
+                            .Where(c => c.enddate == null && c.startdate <= startDateThreshold.AddDays(-6))
+                            .ToList();
+
+
+
+                        db.SaveChanges();
+
+                        return Request.CreateResponse(HttpStatusCode.OK, casesByDate.OrderByDescending(n => n.Date));
+                    }
+                    catch (Exception ex)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                    }
+                }
+        */
+
+
+
+
         //----------------------------------------------------------------------------//
 
 
@@ -723,6 +822,7 @@ namespace FYP_Api.Controllers
         {
             try
             {
+                ProjectEntities db = new ProjectEntities();
                 List<CasesHelperClass> cases = new List<CasesHelperClass>();
                 DateTime currentDate = DateTime.Now.Date;
 
@@ -756,92 +856,46 @@ namespace FYP_Api.Controllers
             }
         }
 
-        /*private bool compareDate(DateTime dt1,DateTime dt2) {
-            try
-            {
-                if (dt1.ToShortDateString() == dt2.ToShortDateString()) {
-                    return true;
-                }
-                return false;
-            }
-            catch (Exception ex)
-            {
 
-               return false;
-            }
-        }
-*/
-
-
-
-        static bool isRunning=false;
-
-
-        private void setStatus()
-        {
-            try {
-                ProjectEntities db = new ProjectEntities();
-                var dt = DateTime.Now;
-                var currentDate = DateTime.Now.Date;
-                var startDateThreshold = currentDate.AddDays(-7);
-
-                var casesByDate = db.CASES_LOGS
-                    .AsEnumerable()
-                    .Where(c =>
-                        (c.enddate == null && DateTime.Now.Subtract(c.startdate).Days>=7)).ToList();
-                for (int i = 0; i < casesByDate.Count; i++)
-                {
-                    casesByDate[i].enddate = DateTime.Now;
-
-                }
-                db.SaveChanges();
-                Thread.Sleep(720000);
-                setStatus();
-            }
-            catch (Exception ex) { }
-        } 
-/*
         [HttpGet]
-        public HttpResponseMessage GetDengueCasesByDatee()
+        public IHttpActionResult GetDengueCasesBySectorDate(int sec_id)
         {
             try
             {
                 ProjectEntities db = new ProjectEntities();
-                var lst = db.USERs.Where(u => u.role == "user");
-                var result = from u in lst
-                             join c in db.CASES_LOGS on u.user_id equals c.user_id
-                             join s in db.SECTORS on u.sec_id equals s.sec_id
-                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.sec_id, s.sec_name, c.startdate, c.enddate, c.status };
+                List<CasesHelperClass> cases = new List<CasesHelperClass>();
+                DateTime currentDate = DateTime.Now.Date;
 
-                var currentDate = DateTime.Now.Date;
-                var startDateThreshold = currentDate.AddDays(-7);
+                var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
 
-                var cases = db.CASES_LOGS.Where(s=>s.startdate==DateTime.Now||s.enddate==null).ToList();
-                var d = new {
-                    Date = DateTime.Now,
-                    count = cases.Count
-                };// Order by date
+                while (minimumDate <= currentDate)
+                {
+                    CasesHelperClass caseData = new CasesHelperClass();
+                    caseData.date = minimumDate;
 
-                // Update enddate for cases with null enddate that have exceeded 6 days
-                var casesToUpdate = result
-                    .Where(c => c.enddate == null && c.startdate <= startDateThreshold.AddDays(-6))
-                    .ToList();
+                    // Calculate the count for the current date and sector
+                    caseData.count = db.CASES_LOGS.AsEnumerable()
+                        .Count(s => (s.startdate.Date == minimumDate.Date ||
+                                     (s.startdate.Date < minimumDate.Date && (s.enddate == null || s.enddate >= minimumDate))) &&
+                                    db.USERs.Any(u => u.user_id == s.user_id && u.sec_id == sec_id));
 
-             
+                    cases.Add(caseData);
+                    minimumDate = minimumDate.AddDays(1);
+                }
 
-                db.SaveChanges();
+                var result = new
+                {
+                    cases = cases.OrderByDescending(s => s.date),
+                    maxValue = cases.Max(s => s.count) + 5
+                };
 
-                return Request.CreateResponse(HttpStatusCode.OK, casesByDate.OrderByDescending(n => n.Date));
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return InternalServerError(ex);
             }
         }
-*/
-
-
-
 
 
 
@@ -857,7 +911,7 @@ namespace FYP_Api.Controllers
                              select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.sec_id, s.sec_name, c.startdate, c.status };
 
                 var casesByMonth = result
-                    .GroupBy(c => new { Year =  c.startdate.Year , Month = c.startdate.Month  })
+                    .GroupBy(c => new { Year = c.startdate.Year, Month = c.startdate.Month })
                     .Select(g => new { Month = $"{g.Key.Year}-{g.Key.Month:D2}", Count = g.Count() })
                     .OrderBy(d => d.Month);
 
@@ -868,6 +922,50 @@ namespace FYP_Api.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+
+
+        [HttpGet]
+        public IHttpActionResult GetDengueCasesBySectorMonth(int sec_id)
+        {
+            try
+            {
+                ProjectEntities db = new ProjectEntities();
+                List<CasesHelperClass> cases = new List<CasesHelperClass>();
+                DateTime currentDate = DateTime.Now.Date;
+
+                var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
+
+                while (minimumDate <= currentDate)
+                {
+                    CasesHelperClass caseData = new CasesHelperClass();
+                    caseData.date = new DateTime(minimumDate.Year, minimumDate.Month, 1);
+
+                    // Calculate the count for the current month and sector
+                    caseData.count = db.CASES_LOGS.AsEnumerable()
+                        .Count(s => (s.startdate.Year == minimumDate.Year && s.startdate.Month == minimumDate.Month ||
+                                     (s.startdate.Year < minimumDate.Year || (s.startdate.Year == minimumDate.Year && s.startdate.Month < minimumDate.Month)) &&
+                                     (s.enddate == null || s.enddate.Value.Year > minimumDate.Year || (s.enddate.Value.Year == minimumDate.Year && s.enddate.Value.Month >= minimumDate.Month))) &&
+                                    db.USERs.Any(u => u.user_id == s.user_id && u.sec_id == sec_id));
+
+                    cases.Add(caseData);
+                    minimumDate = minimumDate.AddMonths(1);
+                }
+
+                var result = new
+                {
+                    cases = cases.OrderByDescending(s => s.date),
+                    maxValue = cases.Max(s => s.count) + 5
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
 
         [HttpGet]
         public HttpResponseMessage GetDengueCasesByYear()
@@ -890,6 +988,46 @@ namespace FYP_Api.Controllers
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+        [HttpGet]
+        public IHttpActionResult GetDengueCasesBySectorYear(int sec_id)
+        {
+            try
+            {
+                ProjectEntities db = new ProjectEntities();
+                List<CasesHelperClass> cases = new List<CasesHelperClass>();
+                DateTime currentDate = DateTime.Now.Date;
+
+                var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
+
+                while (minimumDate <= currentDate)
+                {
+                    CasesHelperClass caseData = new CasesHelperClass();
+                    caseData.date = new DateTime(minimumDate.Year, 1, 1);
+
+                    // Calculate the count for the current year and sector
+                    caseData.count = db.CASES_LOGS.AsEnumerable()
+                        .Count(s => (s.startdate.Year == minimumDate.Year ||
+                                     (s.startdate.Year < minimumDate.Year) &&
+                                     (s.enddate == null || s.enddate.Value.Year > minimumDate.Year)) &&
+                                    db.USERs.Any(u => u.user_id == s.user_id && u.sec_id == sec_id));
+
+                    cases.Add(caseData);
+                    minimumDate = minimumDate.AddYears(1);
+                }
+
+                var result = new
+                {
+                    cases = cases.OrderByDescending(s => s.date),
+                    maxValue = cases.Max(s => s.count) + 5
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
 
@@ -916,27 +1054,467 @@ namespace FYP_Api.Controllers
         }
 
 
+
+
+
         [HttpGet]
-        public IHttpActionResult GetDengueCasesByDateRange(string from, string to)
+        public IHttpActionResult GetDengueCasesByDate(int daysToSubtract)
         {
             try
             {
-                DateTime fromDate = DateTime.ParseExact(from, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                DateTime toDate = DateTime.ParseExact(to, "yyyy-MM-dd", CultureInfo.InvariantCulture).AddDays(1);
+                ProjectEntities db = new ProjectEntities();
+                List<CasesHelperClass> cases = new List<CasesHelperClass>();
+                DateTime currentDate = DateTime.Today.AddDays(-daysToSubtract);
 
-                var casesInRange = db.CASES_LOGS
-                    .Where(c => c.startdate >= fromDate && c.startdate < toDate)
-                    .GroupBy(c => DbFunctions.TruncateTime(c.startdate))
-                    .Select(g => new { Date = g.Key, Count = g.Count() })
-                    .OrderBy(d => d.Date);
+                var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
 
-                return Ok(casesInRange);
+                while (minimumDate <= currentDate)
+                {
+                    CasesHelperClass caseData = new CasesHelperClass();
+                    caseData.date = minimumDate;
+
+                    // Calculate the count for the current date
+                    caseData.count = db.CASES_LOGS.AsEnumerable()
+                        .Count(s => s.startdate.Date == minimumDate.Date ||
+                                    (s.startdate.Date < minimumDate.Date && (s.enddate == null || s.enddate >= minimumDate)));
+
+                    cases.Add(caseData);
+                    minimumDate = minimumDate.AddDays(1);
+                }
+
+                var result = new
+                {
+                    cases = cases.OrderByDescending(s => s.date),
+                    maxValue = cases.Max(s => s.count) + 5
+                };
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
                 return InternalServerError(ex);
             }
         }
+
+
+
+        [HttpGet]
+        public IHttpActionResult GetDengueCasesByDate2(int daysToSubtract)
+        {
+            try
+            {
+                ProjectEntities db = new ProjectEntities();
+                List<CasesHelperClass> cases = new List<CasesHelperClass>();
+                List<UserInfo> users = new List<UserInfo>();  // List to store users
+
+                DateTime currentDate = DateTime.Today.AddDays(-daysToSubtract);
+
+                var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
+
+                while (minimumDate <= currentDate)
+                {
+                    CasesHelperClass caseData = new CasesHelperClass();
+                    caseData.date = minimumDate;
+
+                    // Calculate the count for the current date
+                    caseData.count = db.CASES_LOGS.AsEnumerable()
+                        .Count(s => s.startdate.Date == minimumDate.Date ||
+                                    (s.startdate.Date < minimumDate.Date && (s.enddate == null || s.enddate >= minimumDate)));
+
+                    cases.Add(caseData);
+                    minimumDate = minimumDate.AddDays(1);
+                }
+
+                // Retrieve users based on the selected date
+                users = GetUsersByDate(currentDate, db);
+
+                var result = new
+                {
+                    cases = cases.OrderByDescending(s => s.date),
+                    users = users,  // Include users in the result
+                    maxValue = cases.Max(s => s.count) + 5
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        // Method to retrieve users based on the selected date
+        private List<UserInfo> GetUsersByDate(DateTime selectedDate, ProjectEntities db)
+        {
+            var users = db.USERs
+                .Where(u => u.role == "user")
+                .Join(db.CASES_LOGS, u => u.user_id, c => c.user_id, (u, c) => new { u, c })
+                .Join(db.SECTORS, x => x.u.sec_id, s => s.sec_id, (x, s) => new { x.u, x.c, s })
+                .Select(x => new UserInfo
+                {
+                    user_id = x.u.user_id,
+                    name = x.u.name,
+                    email = x.u.email,
+                    phone_number = x.u.phone_number,
+                    role = x.u.role,
+                    home_location = x.u.home_location,
+                    office_location = x.u.office_location,
+                    sec_id = (int)x.u.sec_id,
+                    sec_name = x.s.sec_name,
+                    description = x.s.description,
+                    startdate = x.c.startdate,
+                    status = (bool)x.c.status,
+                    enddate = x.c.enddate
+                })
+                .ToList();
+
+            var filteredUsers = users
+                .Where(u => u.startdate.Date == selectedDate.Date && (u.enddate == null || u.enddate >= selectedDate))
+                .ToList();
+
+            return filteredUsers;
+        }
+
+
+
+
+
+
+        [HttpGet]
+        public IHttpActionResult GetDengueCasesByDate3(int daysToSubtract)
+        {
+            try
+            {
+                ProjectEntities db = new ProjectEntities();
+                List<CasesHelperClass> cases = new List<CasesHelperClass>();
+                List<UserInfo> users = new List<UserInfo>();  // List to store users
+
+                DateTime currentDate = DateTime.Today.AddDays(-daysToSubtract);
+
+                var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
+
+                while (minimumDate <= currentDate)
+                {
+                    CasesHelperClass caseData = new CasesHelperClass();
+                    caseData.date = minimumDate;
+
+                    // Calculate the count for the current date
+                    caseData.count = db.CASES_LOGS
+                        .Count(s => DbFunctions.TruncateTime(s.startdate) == DbFunctions.TruncateTime(minimumDate) ||
+                                    (DbFunctions.TruncateTime(s.startdate) < DbFunctions.TruncateTime(minimumDate) &&
+                                    (s.enddate == null || DbFunctions.TruncateTime(s.enddate) >= DbFunctions.TruncateTime(minimumDate))));
+
+                    cases.Add(caseData);
+                    minimumDate = minimumDate.AddDays(1);
+                }
+
+                // Retrieve users based on the selected date
+                var usersQuery = db.USERs
+                    .Where(u => u.role == "user")
+                    .Join(db.CASES_LOGS, u => u.user_id, c => c.user_id, (u, c) => new { u, c })
+                    .Join(db.SECTORS, x => x.u.sec_id, s => s.sec_id, (x, s) => new { x.u, x.c, s })
+                    .Where(x => DbFunctions.TruncateTime(x.c.startdate) == DbFunctions.TruncateTime(currentDate) &&
+                                (x.c.enddate == null || DbFunctions.TruncateTime(x.c.enddate) >= DbFunctions.TruncateTime(currentDate)))
+                    .Select(x => new UserInfo
+                    {
+                        user_id = x.u.user_id,
+                        name = x.u.name,
+                        email = x.u.email,
+                        phone_number = x.u.phone_number,
+                        role = x.u.role,
+                        home_location = x.u.home_location,
+                        office_location = x.u.office_location,
+                        sec_id = (int)x.u.sec_id,
+                        sec_name = x.s.sec_name,
+                        description = x.s.description,
+                        startdate = x.c.startdate,
+                        status = (bool)x.c.status,
+                        enddate = x.c.enddate
+                    });
+
+                users = usersQuery.ToList();
+
+                var result = new
+                {
+                    cases = cases.OrderByDescending(s => s.date),
+                    users = users,  // Include users in the result
+                    maxValue = cases.Max(s => s.count) + 5
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
+
+
+
+
+        /*      [HttpGet]
+              public IHttpActionResult GetDengueUsersByDate2(int daysToSubtract)
+              {
+                  try
+                  {
+                      DateTime targetDate = DateTime.Today.AddDays(-daysToSubtract);
+                      List<UserInfo> users = GetUsersByDate(targetDate);
+                      List<CasesHelperClass> cases = GetCasesByDate(targetDate, users);
+                      int maxValue = cases.Max(s => s.count) + 5;
+
+                      var result = new
+                      {
+                          cases = cases.OrderByDescending(s => s.date),
+                          maxValue
+                      };
+
+                      return Ok(result);
+                  }
+                  catch (Exception ex)
+                  {
+                      return InternalServerError(ex);
+                  }
+              }
+
+              private List<UserInfo> GetUsersByDate(DateTime targetDate)
+              {
+                  return db.USERs
+                      .Where(u => u.role == "user")
+                      .Join(db.CASES_LOGS, u => u.user_id, c => c.user_id, (u, c) => new { u, c })
+                      .Join(db.SECTORS, x => x.u.sec_id, s => s.sec_id, (x, s) => new { x.u, x.c, s })
+                      .Where(x => x.c.startdate == targetDate)
+                      .Select(x => new UserInfo
+                      {    
+                          user_id =x.u.user_id,
+                          name = x.u.name,
+                          email = x.u.email,
+                          phone_number = x.u.phone_number,
+                          role = x.u.role,
+                          home_location = x.u.home_location,
+                          office_location = x.u.office_location,
+                          sec_id = (int)x.u.sec_id,
+                          sec_name = x.s.sec_name,
+                          description = x.s.description,
+                          startdate = x.c.startdate,
+                          status = (bool)x.c.status,
+                          enddate = x.c.enddate
+                      })
+                      .ToList();
+              }
+
+              private List<CasesHelperClass> GetCasesByDate(DateTime targetDate, List<UserInfo> users)
+              {
+
+                  List<CasesHelperClass> cases = new List<CasesHelperClass>();
+                  DateTime minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
+
+                  while (minimumDate <= targetDate)
+                  {
+                      CasesHelperClass caseData = new CasesHelperClass();
+                      caseData.date = minimumDate;
+                      caseData.count = CalculateCaseCount(minimumDate, users);
+                      caseData.users = GetUsersForDate(minimumDate, users);
+
+                      cases.Add(caseData);
+                      minimumDate = minimumDate.AddDays(1);
+                  }
+
+                  return cases.OrderByDescending(s => s.date).ToList();
+              }
+
+              private int CalculateCaseCount(DateTime date, List<UserInfo> users)
+              {
+                  return users.Count(u => u.startdate.Date == date.Date);
+              }
+
+              private List<UserInfo> GetUsersForDate(DateTime date, List<UserInfo> users)
+              {
+                  return users.Where(u => u.startdate.Date == date.Date).ToList();
+              }
+
+      */
+
+
+
+        /*  [HttpGet]
+          public IHttpActionResult GetDengueUsersByDate2(int daysToSubtract)
+          {
+              try
+              {
+                  DateTime targetDate = DateTime.Today.AddDays(-daysToSubtract);
+                  List<UserInfo> users = GetUsersByDate(targetDate);
+                  List<CasesHelperClass> cases = GetCasesByDate(targetDate, users);
+                  int maxValue = cases.Max(s => s.count) + 5;
+
+                  var result = new
+                  {
+                      cases = cases.OrderByDescending(s => s.date),
+                      maxValue
+                  };
+
+                  return Ok(result);
+              }
+              catch (Exception ex)
+              {
+                  return InternalServerError(ex);
+              }
+          }
+
+
+
+          // ...
+
+          private List<UserInfo> GetUsersByDate(DateTime targetDate)
+          {
+              var users = db.USERs
+                  .Where(u => u.role == "user")
+                  .Join(db.CASES_LOGS, u => u.user_id, c => c.user_id, (u, c) => new { u, c })
+                  .Join(db.SECTORS, x => x.u.sec_id, s => s.sec_id, (x, s) => new { x.u, x.c, s })
+                  .Select(x => new UserInfo
+                  {
+                      user_id = x.u.user_id,
+                      name = x.u.name,
+                      email = x.u.email,
+                      phone_number = x.u.phone_number,
+                      role = x.u.role,
+                      home_location = x.u.home_location,
+                      office_location = x.u.office_location,
+                      sec_id = (int)x.u.sec_id,
+                      sec_name = x.s.sec_name,
+                      description = x.s.description,
+                      startdate = x.c.startdate,
+                      status = (bool)x.c.status,
+                      enddate = x.c.enddate
+                  })
+                  .ToList();
+
+              var filteredUsers = users
+                  .Where(u => u.startdate.Date <= targetDate.Date && (u.enddate == null || u.enddate >= targetDate))
+                  .ToList();
+
+              return filteredUsers;
+          }
+
+
+
+
+
+
+          // ...
+
+          private List<CasesHelperClass> GetCasesByDate(DateTime targetDate, List<UserInfo> users)
+          {
+              List<CasesHelperClass> cases = new List<CasesHelperClass>();
+
+              // Calculate counts for remaining dates
+              var caseCounts = db.CASES_LOGS
+                  .Where(c => SqlFunctions.DateDiff("day", c.startdate, targetDate) != 0 && (c.enddate == null || c.enddate >= targetDate))
+                  .GroupBy(c => SqlFunctions.DateDiff("day", c.startdate, targetDate))
+                  .Select(g => new { DateDiff = g.Key, Count = g.Count() })
+                  .ToList();
+
+              // Add case data for the selected date
+              CasesHelperClass selectedDateCase = new CasesHelperClass();
+              selectedDateCase.date = targetDate;
+              selectedDateCase.count = CalculateCaseCount(targetDate, users);
+              selectedDateCase.users = GetUsersForDate(targetDate, users);
+              cases.Add(selectedDateCase);
+
+              // Add case data for the remaining dates
+              foreach (var caseCount in caseCounts)
+              {
+                  DateTime date = targetDate.AddDays(-(int)caseCount.DateDiff);
+                  CasesHelperClass caseData = new CasesHelperClass();
+                  caseData.date = date;
+                  caseData.count = caseCount.Count;
+                  cases.Add(caseData);
+              }
+
+              return cases.OrderByDescending(s => s.date).ToList();
+          }
+
+          private int CalculateCaseCount(DateTime date, List<UserInfo> users)
+          {
+              return users.Count(u => u.startdate.Date == date.Date);
+          }
+
+          private List<UserInfo> GetUsersForDate(DateTime date, List<UserInfo> users)
+          {
+              return users.Where(u => u.startdate.Date == date.Date).ToList();
+          }*/
+
+
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+
+
+        [HttpGet]
+        public IHttpActionResult GetDengueCasesByDateRange(string from, string to)
+        {
+            try
+            {
+                DateTime fromDate;
+                DateTime toDate;
+
+                if (!DateTime.TryParseExact(from, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out fromDate))
+                {
+                    return BadRequest("Invalid 'from' date format. Please provide the date in yyyy-MM-dd format.");
+                }
+
+                if (!DateTime.TryParseExact(to, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out toDate))
+                {
+                    return BadRequest("Invalid 'to' date format. Please provide the date in yyyy-MM-dd format.");
+                }
+
+                toDate = toDate.AddDays(1); // Increment the 'to' date by 1 to include the entire day
+
+                ProjectEntities db = new ProjectEntities();
+                List<CasesHelperClass> cases = new List<CasesHelperClass>();
+
+                while (toDate <= fromDate)
+                {
+                    CasesHelperClass caseData = new CasesHelperClass();
+                    caseData.date = toDate;
+
+                    // Calculate the count for the current date
+                    caseData.count = db.CASES_LOGS.AsEnumerable()
+                        .Count(s => s.startdate.Date == toDate.Date ||
+                                    (s.startdate.Date < toDate.Date && (s.enddate == null || s.enddate >= toDate)));
+
+                    cases.Add(caseData);
+                    toDate = toDate.AddDays(1);
+                }
+
+                if (!cases.Any())
+                {
+                    // Handle the case when no data is available in the given date range
+                    return Ok(new { cases = Enumerable.Empty<CasesHelperClass>(), maxValue = 0 });
+                }
+
+                var result = new
+                {
+                    cases = cases.OrderByDescending(s => s.date),
+                    maxValue = cases.Max(s => s.count) + 5
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
 
 
         [HttpGet]
@@ -973,7 +1551,7 @@ namespace FYP_Api.Controllers
 
         [HttpPost]
         public HttpResponseMessage CreateOfficerAndAssignSector()
-        
+
         {
             try
             {
@@ -1178,34 +1756,34 @@ namespace FYP_Api.Controllers
                 int threshold = data.threshold;
                 string description = data.description;
                 List<double[]> latLongs = data.latLongs.ToObject<List<double[]>>();
-               
+
                 // First, check if the sector already exists
                 var existingSector = db.SECTORS.FirstOrDefault(s => s.sec_name == secName);
                 if (existingSector == null)
                 {
                     // Create a new sector if it doesn't exist
                     var sector = new SECTOR
-                {
-                    sec_name = secName,
-                    threshold = threshold,
-                    description = description
-                };
-
-                // Add the sector to the database
-                db.SECTORS.Add(sector);
-                db.SaveChanges();
-
-                // Loop through the latLongs and add each point to the database as a new polygon
-                foreach (var latLong in latLongs)
-                {
-                    var polygon = new POLYGON
                     {
-                        sec_id = sector.sec_id,
-                        lat_long = string.Join(",", latLong)
+                        sec_name = secName,
+                        threshold = threshold,
+                        description = description
                     };
-                    db.POLYGONS.Add(polygon);
-                }
-                db.SaveChanges();
+
+                    // Add the sector to the database
+                    db.SECTORS.Add(sector);
+                    db.SaveChanges();
+
+                    // Loop through the latLongs and add each point to the database as a new polygon
+                    foreach (var latLong in latLongs)
+                    {
+                        var polygon = new POLYGON
+                        {
+                            sec_id = sector.sec_id,
+                            lat_long = string.Join(",", latLong)
+                        };
+                        db.POLYGONS.Add(polygon);
+                    }
+                    db.SaveChanges();
                 }
                 else
                 {
@@ -1400,7 +1978,7 @@ namespace FYP_Api.Controllers
             }
         }
 
-        
+
         //----------------------------------------------------------------------------//
 
 
@@ -1455,7 +2033,7 @@ namespace FYP_Api.Controllers
                     };
                     _ = db.ASSIGNSECTORS.Add(newass);
                     _ = db.SaveChanges();
-                    return Request.CreateResponse(HttpStatusCode.OK,"Assigned");
+                    return Request.CreateResponse(HttpStatusCode.OK, "Assigned");
                 }
                 else
                 {
@@ -1474,7 +2052,7 @@ namespace FYP_Api.Controllers
 
         //----------------------------------------------------------------------------//
 
-       
+
 
 
     }
