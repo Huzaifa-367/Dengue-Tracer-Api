@@ -816,7 +816,6 @@ namespace FYP_Api.Controllers
 
         //----------------------------------------------------------------------------//
 
-
         [HttpGet]
         public IHttpActionResult GetDengueCasesByDate()
         {
@@ -855,6 +854,7 @@ namespace FYP_Api.Controllers
                 return InternalServerError(ex);
             }
         }
+
 
 
         [HttpGet]
@@ -900,28 +900,78 @@ namespace FYP_Api.Controllers
 
 
         [HttpGet]
-        public HttpResponseMessage GetDengueCasesByMonth()
+        public IHttpActionResult GetDengueCasesByMonth()
         {
             try
             {
-                var lst = db.USERs.Where(u => u.role == "user").ToList();
-                var result = from u in lst
-                             join c in db.CASES_LOGS on u.user_id equals c.user_id
-                             join s in db.SECTORS on u.sec_id equals s.sec_id
-                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.sec_id, s.sec_name, c.startdate, c.status };
+                ProjectEntities db = new ProjectEntities();
+                List<CasesHelperClass> cases = new List<CasesHelperClass>();
+                DateTime currentDate = DateTime.Now.Date;
 
-                var casesByMonth = result
-                    .GroupBy(c => new { Year = c.startdate.Year, Month = c.startdate.Month })
-                    .Select(g => new { Month = $"{g.Key.Year}-{g.Key.Month:D2}", Count = g.Count() })
-                    .OrderBy(d => d.Month);
+                var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
 
-                return Request.CreateResponse(HttpStatusCode.OK, casesByMonth.OrderByDescending(n => n.Month));
+                while (minimumDate <= currentDate)
+                {
+                    CasesHelperClass caseData = new CasesHelperClass();
+                    caseData.date = new DateTime(minimumDate.Year, minimumDate.Month, 1);
+
+                    // Calculate the count for the current month
+                    caseData.count = db.CASES_LOGS.AsEnumerable()
+                        .Count(s => (s.startdate.Year == minimumDate.Year && s.startdate.Month == minimumDate.Month ||
+                                     (s.startdate.Year < minimumDate.Year || (s.startdate.Year == minimumDate.Year && s.startdate.Month < minimumDate.Month)) &&
+                                     (s.enddate == null || s.enddate.Value.Year > minimumDate.Year || (s.enddate.Value.Year == minimumDate.Year && s.enddate.Value.Month >= minimumDate.Month))));
+
+                    cases.Add(caseData);
+                    minimumDate = minimumDate.AddMonths(1);
+                }
+
+                var result = new
+                {
+                    cases = cases.OrderByDescending(s => s.date),
+                    maxValue = cases.Max(s => s.count) + 5
+                };
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return InternalServerError(ex);
             }
         }
+
+
+        [HttpGet]
+        public IHttpActionResult GetDengueCasesByMonth2()
+        {
+            try
+            {
+                ProjectEntities db = new ProjectEntities();
+
+                var cases = db.CASES_LOGS
+                    .GroupBy(c => new { Year = c.startdate.Year, Month = c.startdate.Month })
+                    .Select(g => new
+                    {
+                        Month = $"{g.Key.Year}-{g.Key.Month:D2}",
+                        Count = g.Count(),
+                        Users = db.USERs.Where(u => u.sec_id == sec_id).ToList()
+                    })
+                    .OrderBy(d => d.Month)
+                    .ToList();
+
+                var result = new
+                {
+                    cases,
+                    maxValue = cases.Max(s => s.Count) + 5
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
 
 
 
@@ -967,29 +1017,45 @@ namespace FYP_Api.Controllers
         }
 
 
-        [HttpGet]
-        public HttpResponseMessage GetDengueCasesByYear()
+        public IHttpActionResult GetDengueCasesByYear()
         {
             try
             {
-                var lst = db.USERs.Where(u => u.role == "user").ToList();
-                var result = from u in lst
-                             join c in db.CASES_LOGS on u.user_id equals c.user_id
-                             join s in db.SECTORS on u.sec_id equals s.sec_id
-                             select new { u.name, u.email, u.phone_number, u.role, u.home_location, u.sec_id, s.sec_name, c.startdate, c.status };
+                ProjectEntities db = new ProjectEntities();
+                List<CasesHelperClass> cases = new List<CasesHelperClass>();
+                DateTime currentDate = DateTime.Now.Date;
 
-                var casesByYear = result
-                                  .GroupBy(c => new { Year = c.startdate.Year })
-                                  .Select(g => new { Year = g.Key.Year.ToString(), Count = g.Count() })
-                                  .OrderBy(d => d.Year);
+                var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
 
-                return Request.CreateResponse(HttpStatusCode.OK, casesByYear.OrderByDescending(n => n.Year));
+                while (minimumDate <= currentDate)
+                {
+                    CasesHelperClass caseData = new CasesHelperClass();
+                    caseData.date = new DateTime(minimumDate.Year, 1, 1);
+
+                    // Calculate the count for the current year
+                    caseData.count = db.CASES_LOGS.AsEnumerable()
+                        .Count(s => (s.startdate.Year == minimumDate.Year ||
+                                     (s.startdate.Year < minimumDate.Year) &&
+                                     (s.enddate == null || s.enddate.Value.Year > minimumDate.Year)));
+
+                    cases.Add(caseData);
+                    minimumDate = minimumDate.AddYears(1);
+                }
+
+                var result = new
+                {
+                    cases = cases.OrderByDescending(s => s.date),
+                    maxValue = cases.Max(s => s.count) + 5
+                };
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return InternalServerError(ex);
             }
         }
+
         [HttpGet]
         public IHttpActionResult GetDengueCasesBySectorYear(int sec_id)
         {
@@ -1178,7 +1244,11 @@ namespace FYP_Api.Controllers
 
 
 
-
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name=" "NOt working"daysToSubtract"></param>
+        /// <returns></returns>
 
         [HttpGet]
         public IHttpActionResult GetDengueCasesByDate3(int daysToSubtract)
@@ -1504,7 +1574,7 @@ namespace FYP_Api.Controllers
 
                 var result = new
                 {
-                    cases = cases.OrderByDescending(s => s.date),
+                    cases = cases.OrderByDescending(s => s.date.ToString("yyyy-MM")),
                     maxValue = cases.Max(s => s.count) + 5
                 };
 
