@@ -940,37 +940,6 @@ namespace FYP_Api.Controllers
         }
 
 
-        [HttpGet]
-        public IHttpActionResult GetDengueCasesByMonth2()
-        {
-            try
-            {
-                ProjectEntities db = new ProjectEntities();
-
-                var cases = db.CASES_LOGS
-                    .GroupBy(c => new { Year = c.startdate.Year, Month = c.startdate.Month })
-                    .Select(g => new
-                    {
-                        Month = $"{g.Key.Year}-{g.Key.Month:D2}",
-                        Count = g.Count(),
-                        Users = db.USERs.Where(u => u.sec_id == sec_id).ToList()
-                    })
-                    .OrderBy(d => d.Month)
-                    .ToList();
-
-                var result = new
-                {
-                    cases,
-                    maxValue = cases.Max(s => s.Count) + 5
-                };
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
 
 
 
