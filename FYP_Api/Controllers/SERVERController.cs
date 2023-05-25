@@ -72,6 +72,39 @@ namespace FYP_Api.Controllers
 
         }
 
+        [HttpPost]
+        public HttpResponseMessage ProfileUpdate()
+        {
+            try
+            {
+                HttpRequest request = HttpContext.Current.Request;
+
+                string email = request["email"];
+                USER user = db.USERs.Where(s => s.email == email).FirstOrDefault();
+                if (user != null)
+                {
+                    user.name = request["name"];
+                    user.sec_id = int.Parse(request["sec_id"]);
+                    user.phone_number = request["Phone_number"];
+                    user.role = request["role"];
+                    user.password = request["password"];
+                    user.home_location = request["home_location"];
+                    user.office_location = request["office_location"];
+
+                    db.SaveChanges();
+
+                    return Request.CreateResponse(HttpStatusCode.OK, "Updated");
+                }
+
+                return Request.CreateResponse(HttpStatusCode.NotFound, "Failed");
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
         //----------------------------------------------------------------------------//
 
         [HttpPost]
@@ -555,74 +588,74 @@ namespace FYP_Api.Controllers
         }
 
         //----------------------------------------------------------------------------//
-        [HttpGet]
-        public HttpResponseMessage Login(string email, string password)
-        {
-            try
-            {
-                if (!isRunning)
-                {
-                    isRunning = true;
-                    new Thread(setStatus).Start();
-                }
-                var user = db.USERs.Where(s => s.email == email && s.password == password).FirstOrDefault();
-                if (user == null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, "false");
-                }
-                else if (user.role.ToLower() == "user")
-                {
+        /* [HttpGet]
+         public HttpResponseMessage Login(string email, string password)
+         {
+             try
+             {
+                 if (!isRunning)
+                 {
+                     isRunning = true;
+                     new Thread(setStatus).Start();
+                 }
+                 var user = db.USERs.Where(s => s.email == email && s.password == password).FirstOrDefault();
+                 if (user == null)
+                 {
+                     return Request.CreateResponse(HttpStatusCode.OK, "false");
+                 }
+                 else if (user.role.ToLower() == "user")
+                 {
 
-                    var result = from u in db.USERs
-                                 join c in db.CASES_LOGS
-                                     on u.user_id equals c.user_id into caselogs
-                                 from c in caselogs.DefaultIfEmpty()
-                                 join s in db.SECTORS on u.sec_id equals s.sec_id
-                                 where u.email == email && u.password == password
+                     var result = from u in db.USERs
+                                  join c in db.CASES_LOGS
+                                      on u.user_id equals c.user_id into caselogs
+                                  from c in caselogs.DefaultIfEmpty()
+                                  join s in db.SECTORS on u.sec_id equals s.sec_id
+                                  where u.email == email && u.password == password
+                                  select new
+                                  {
+                                      u.user_id,
+                                      u.name,
+                                      u.email,
+                                      u.phone_number,
+                                      u.image,
+                                      u.role,
+                                      u.home_location,
+                                      u.office_location,
+                                      u.sec_id,
+                                      s.sec_name,
+                                      s.description,
+                                      startdate = (DateTime?)c.startdate,
+                                      status = (bool?)(c != null ? c.status : false),
+                                      enddate = (DateTime?)c.enddate
+                                  };
+                     return Request.CreateResponse(HttpStatusCode.OK, result);
+                 }
+                 else
+                 {
+
+                     var admin = from u in db.USERs.Where(s => s.email == email && s.password == password)
                                  select new
                                  {
                                      u.user_id,
+                                     u.image,
                                      u.name,
                                      u.email,
                                      u.phone_number,
-                                     u.image,
                                      u.role,
                                      u.home_location,
                                      u.office_location,
                                      u.sec_id,
-                                     s.sec_name,
-                                     s.description,
-                                     startdate = (DateTime?)c.startdate,
-                                     status = (bool?)(c != null ? c.status : false),
-                                     enddate = (DateTime?)c.enddate
                                  };
-                    return Request.CreateResponse(HttpStatusCode.OK, result);
-                }
-                else
-                {
-
-                    var admin = from u in db.USERs.Where(s => s.email == email && s.password == password)
-                                select new
-                                {
-                                    u.user_id,
-                                    u.image,
-                                    u.name,
-                                    u.email,
-                                    u.phone_number,
-                                    u.role,
-                                    u.home_location,
-                                    u.office_location,
-                                    u.sec_id,
-                                };
-                    return Request.CreateResponse(HttpStatusCode.OK, admin);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-
+                     return Request.CreateResponse(HttpStatusCode.OK, admin);
+                 }
+             }
+             catch (Exception ex)
+             {
+                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+             }
+         }
+ */
 
         //[HttpGet]
         //public HttpResponseMessage Login(string email, string password)
@@ -721,6 +754,103 @@ namespace FYP_Api.Controllers
         //        return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
         //    }
         //}
+
+
+
+
+        [HttpGet]
+        public HttpResponseMessage Login(string email, string password)
+        {
+            try
+            {
+                if (!isRunning)
+                {
+                    isRunning = true;
+                    new Thread(setStatus).Start();
+                }
+
+                var user = db.USERs.Where(s => s.email == email && s.password == password).FirstOrDefault();
+
+                if (user == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, "false");
+                }
+                else if (user.role.ToLower() == "user")
+                {
+                    var result = from u in db.USERs
+                                 join c in db.CASES_LOGS on u.user_id equals c.user_id into caselogs
+                                 from c in caselogs.DefaultIfEmpty()
+                                 join s in db.SECTORS on u.sec_id equals s.sec_id
+                                 where u.email == email && u.password == password
+                                 select new
+                                 {
+                                     u.user_id,
+                                     u.name,
+                                     u.email,
+                                     u.phone_number,
+                                     u.image,
+                                     u.role,
+                                     u.home_location,
+                                     u.office_location,
+                                     u.sec_id,
+                                     s.sec_name,
+                                     s.description,
+                                     startdate = (DateTime?)c.startdate,
+                                     status = (bool?)(c != null ? c.status : false),
+                                     enddate = (DateTime?)c.enddate
+                                 };
+                    return Request.CreateResponse(HttpStatusCode.OK, result);
+                }
+                else if (user.role.ToLower() == "officer")
+                {
+                    var officer = from u in db.USERs
+                                  join a in db.ASSIGNSECTORS on u.user_id equals a.user_id
+                                  join s in db.SECTORS on a.sec_id equals s.sec_id
+                                  where u.email == email && u.password == password
+                                  group s by new { u.user_id, u.name, u.email, u.phone_number, u.image, u.role, u.home_location, u.office_location, u.sec_id } into g
+                                  select new
+                                  {
+                                      g.Key.user_id,
+                                      g.Key.name,
+                                      g.Key.email,
+                                      g.Key.phone_number,
+                                      g.Key.image,
+                                      g.Key.role,
+                                      g.Key.home_location,
+                                      g.Key.office_location,
+                                      g.Key.sec_id,
+                                      sectors = g.Select(se => new
+                                      {
+                                          se.sec_id,
+                                          se.sec_name,
+                                          se.description
+                                      })
+                                  };
+                    return Request.CreateResponse(HttpStatusCode.OK, officer.FirstOrDefault());
+                }
+                else
+                {
+                    var admin = from u in db.USERs.Where(s => s.email == email && s.password == password)
+                                select new
+                                {
+                                    u.user_id,
+                                    u.image,
+                                    u.name,
+                                    u.email,
+                                    u.phone_number,
+                                    u.role,
+                                    u.home_location,
+                                    u.office_location,
+                                    u.sec_id,
+                                };
+                    return Request.CreateResponse(HttpStatusCode.OK, admin);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
 
 
         //----------------------------------------------------------------------------//
