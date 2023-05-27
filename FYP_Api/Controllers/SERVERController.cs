@@ -791,6 +791,7 @@ namespace FYP_Api.Controllers
                                      u.image,
                                      u.role,
                                      u.home_location,
+                                     u.password,
                                      u.office_location,
                                      u.sec_id,
                                      s.sec_name,
@@ -807,7 +808,7 @@ namespace FYP_Api.Controllers
                                   join a in db.ASSIGNSECTORS on u.user_id equals a.user_id
                                   join s in db.SECTORS on a.sec_id equals s.sec_id
                                   where u.email == email && u.password == password
-                                  group s by new { u.user_id, u.name, u.email, u.phone_number, u.image, u.role, u.home_location, u.office_location, u.sec_id } into g
+                                  group s by new { u.user_id, u.name, u.email, u.phone_number, u.password, u.image, u.role, u.home_location, u.office_location, u.sec_id } into g
                                   select new
                                   {
                                       g.Key.user_id,
@@ -815,6 +816,7 @@ namespace FYP_Api.Controllers
                                       g.Key.email,
                                       g.Key.phone_number,
                                       g.Key.image,
+                                      g.Key.password,
                                       g.Key.role,
                                       g.Key.home_location,
                                       g.Key.office_location,
@@ -837,6 +839,7 @@ namespace FYP_Api.Controllers
                                     u.image,
                                     u.name,
                                     u.email,
+                                    u.password,
                                     u.phone_number,
                                     u.role,
                                     u.home_location,

@@ -2,7 +2,7 @@
 <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
   <EntityContainerMapping StorageEntityContainer="ProjectModelStoreContainer" CdmEntityContainer="ProjectEntities">
     <EntitySetMapping Name="ACTION_LOGS">
-      <EntityTypeMapping TypeName="ProjectModel.ACTION_LOGS">
+      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.ACTION_LOGS)">
         <MappingFragment StoreEntitySet="ACTION_LOGS">
           <ScalarProperty Name="action_id" ColumnName="action_id" />
           <ScalarProperty Name="sec_id" ColumnName="sec_id" />
@@ -12,16 +12,16 @@
       </EntityTypeMapping>
     </EntitySetMapping>
     <EntitySetMapping Name="ASSIGNSECTORS">
-      <EntityTypeMapping TypeName="ProjectModel.ASSIGNSECTOR">
+      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.ASSIGNSECTOR)">
         <MappingFragment StoreEntitySet="ASSIGNSECTORS">
+          <ScalarProperty Name="ass_id" ColumnName="ass_id" />
           <ScalarProperty Name="user_id" ColumnName="user_id" />
           <ScalarProperty Name="sec_id" ColumnName="sec_id" />
-          <ScalarProperty Name="ass_id" ColumnName="ass_id" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
     <EntitySetMapping Name="CASES_LOGS">
-      <EntityTypeMapping TypeName="ProjectModel.CASES_LOGS">
+      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.CASES_LOGS)">
         <MappingFragment StoreEntitySet="CASES_LOGS">
           <ScalarProperty Name="case_id" ColumnName="case_id" />
           <ScalarProperty Name="user_id" ColumnName="user_id" />
@@ -32,20 +32,20 @@
       </EntityTypeMapping>
     </EntitySetMapping>
     <EntitySetMapping Name="NOTIFICATIONs">
-      <EntityTypeMapping TypeName="ProjectModel.NOTIFICATION">
+      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.NOTIFICATION)">
         <MappingFragment StoreEntitySet="NOTIFICATIONs">
-          <ScalarProperty Name="percnt" ColumnName="percnt" />
-          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
-          <ScalarProperty Name="user_id" ColumnName="user_id" />
-          <ScalarProperty Name="status" ColumnName="status" />
           <ScalarProperty Name="notif_id" ColumnName="notif_id" />
           <ScalarProperty Name="type" ColumnName="type" />
           <ScalarProperty Name="date" ColumnName="date" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="user_id" ColumnName="user_id" />
+          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+          <ScalarProperty Name="percnt" ColumnName="percnt" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
     <EntitySetMapping Name="POLYGONS">
-      <EntityTypeMapping TypeName="ProjectModel.POLYGON">
+      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.POLYGON)">
         <MappingFragment StoreEntitySet="POLYGONS">
           <ScalarProperty Name="poly_id" ColumnName="poly_id" />
           <ScalarProperty Name="sec_id" ColumnName="sec_id" />
@@ -54,7 +54,7 @@
       </EntityTypeMapping>
     </EntitySetMapping>
     <EntitySetMapping Name="SECTORS">
-      <EntityTypeMapping TypeName="ProjectModel.SECTOR">
+      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.SECTOR)">
         <MappingFragment StoreEntitySet="SECTORS">
           <ScalarProperty Name="sec_id" ColumnName="sec_id" />
           <ScalarProperty Name="sec_name" ColumnName="sec_name" />
@@ -64,7 +64,7 @@
       </EntityTypeMapping>
     </EntitySetMapping>
     <EntitySetMapping Name="USERs">
-      <EntityTypeMapping TypeName="ProjectModel.USER">
+      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.USER)">
         <MappingFragment StoreEntitySet="USERs">
           <ScalarProperty Name="user_id" ColumnName="user_id" />
           <ScalarProperty Name="sec_id" ColumnName="sec_id" />

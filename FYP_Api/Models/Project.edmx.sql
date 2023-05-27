@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 05/06/2023 22:42:50
+-- Date Created: 05/26/2023 16:43:57
 -- Generated from EDMX file: E:\FYP\Dengue-Tracer-Api\FYP_Api\Models\Project.edmx
 -- --------------------------------------------------
 
@@ -70,7 +70,7 @@ CREATE TABLE [dbo].[CASES_LOGS] (
     [case_id] int IDENTITY(1,1) NOT NULL,
     [user_id] int  NULL,
     [status] bit  NULL,
-    [startdate] datetime  NULL,
+    [startdate] datetime  NOT NULL,
     [enddate] datetime  NULL
 );
 GO
@@ -78,10 +78,12 @@ GO
 -- Creating table 'NOTIFICATIONs'
 CREATE TABLE [dbo].[NOTIFICATIONs] (
     [notif_id] int IDENTITY(1,1) NOT NULL,
-    [case_id] int  NULL,
-    [title] varchar(30)  NULL,
     [type] bit  NULL,
-    [date] datetime  NULL
+    [date] datetime  NULL,
+    [status] smallint  NULL,
+    [user_id] int  NULL,
+    [sec_id] int  NULL,
+    [percnt] int  NULL
 );
 GO
 
