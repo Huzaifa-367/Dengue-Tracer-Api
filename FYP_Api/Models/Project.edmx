@@ -4,88 +4,89 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="ProjectModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-  <EntityContainer Name="ProjectModelStoreContainer">
-    <EntitySet Name="ACTION_LOGS" EntityType="ProjectModel.Store.ACTION_LOGS" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="ASSIGNSECTORS" EntityType="ProjectModel.Store.ASSIGNSECTORS" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="CASES_LOGS" EntityType="ProjectModel.Store.CASES_LOGS" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="NOTIFICATIONs" EntityType="ProjectModel.Store.NOTIFICATIONs" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="POLYGONS" EntityType="ProjectModel.Store.POLYGONS" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="SECTORS" EntityType="ProjectModel.Store.SECTORS" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="USERs" EntityType="ProjectModel.Store.USERs" store:Type="Tables" Schema="dbo" />
-  </EntityContainer>
-  <EntityType Name="ACTION_LOGS">
-    <Key>
-      <PropertyRef Name="action_id" />
-    </Key>
-    <Property Name="action_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="sec_id" Type="int" Nullable="true" />
-    <Property Name="date" Type="datetime" Nullable="true" />
-    <Property Name="act_status" Type="bit" Nullable="true" />
-  </EntityType>
-  <EntityType Name="ASSIGNSECTORS">
-    <Key>
-      <PropertyRef Name="ass_id" />
-    </Key>
-    <Property Name="user_id" Type="int" Nullable="true" />
-    <Property Name="sec_id" Type="int" Nullable="true" />
-    <Property Name="ass_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-  </EntityType>
-  <EntityType Name="CASES_LOGS">
-    <Key>
-      <PropertyRef Name="case_id" />
-    </Key>
-    <Property Name="case_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="user_id" Type="int" Nullable="true" />
-    <Property Name="status" Type="bit" Nullable="true" />
-    <Property Name="startdate" Type="datetime" Nullable="false" />
-    <Property Name="enddate" Type="datetime" Nullable="true" />
-  </EntityType>
-  <EntityType Name="NOTIFICATIONs">
-    <Key>
-      <PropertyRef Name="notif_id" />
-    </Key>
-    <Property Name="notif_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="type" Type="bit" Nullable="true" />
-    <Property Name="date" Type="datetime" Nullable="true" />
-    <Property Name="status" Type="smallint" Nullable="true" />
-    <Property Name="user_id" Type="int" Nullable="true" />
-    <Property Name="sec_id" Type="int" Nullable="true" />
-    <Property Name="percnt" Type="int" Nullable="true" />
-  </EntityType>
-  <EntityType Name="POLYGONS">
-    <Key>
-      <PropertyRef Name="poly_id" />
-    </Key>
-    <Property Name="poly_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="sec_id" Type="int" Nullable="true" />
-    <Property Name="lat_long" Type="varchar(max)" Nullable="true" />
-  </EntityType>
-  <EntityType Name="SECTORS">
-    <Key>
-      <PropertyRef Name="sec_id" />
-    </Key>
-    <Property Name="sec_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="sec_name" Type="varchar" Nullable="true" MaxLength="50" />
-    <Property Name="threshold" Type="int" Nullable="true" />
-    <Property Name="description" Type="varchar(max)" Nullable="true" />
-  </EntityType>
-  <EntityType Name="USERs">
-    <Key>
-      <PropertyRef Name="user_id" />
-    </Key>
-    <Property Name="user_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="sec_id" Type="int" Nullable="true" />
-    <Property Name="name" Type="varchar" Nullable="true" MaxLength="20" />
-    <Property Name="email" Type="varchar" Nullable="true" MaxLength="40" />
-    <Property Name="phone_number" Type="varchar" Nullable="true" MaxLength="20" />
-    <Property Name="password" Type="varchar" Nullable="true" MaxLength="20" />
-    <Property Name="role" Type="varchar" Nullable="true" MaxLength="10" />
-    <Property Name="image" Type="varchar(max)" Nullable="true" />
-    <Property Name="home_location" Type="varchar(max)" Nullable="true" />
-    <Property Name="office_location" Type="varchar(max)" Nullable="true" />
-  </EntityType>
-</Schema></edmx:StorageModels>
+      <Schema Namespace="ProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ACTION_LOGS">
+          <Key>
+            <PropertyRef Name="action_id" />
+          </Key>
+          <Property Name="action_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sec_id" Type="int" />
+          <Property Name="date" Type="datetime" />
+          <Property Name="act_status" Type="bit" />
+        </EntityType>
+        <EntityType Name="ASSIGNSECTORS">
+          <Key>
+            <PropertyRef Name="ass_id" />
+          </Key>
+          <Property Name="user_id" Type="int" />
+          <Property Name="sec_id" Type="int" />
+          <Property Name="ass_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CASES_LOGS">
+          <Key>
+            <PropertyRef Name="case_id" />
+          </Key>
+          <Property Name="case_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_id" Type="int" />
+          <Property Name="status" Type="bit" />
+          <Property Name="startdate" Type="datetime" Nullable="false" />
+          <Property Name="enddate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="NOTIFICATIONs">
+          <Key>
+            <PropertyRef Name="notif_id" />
+          </Key>
+          <Property Name="notif_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_id" Type="int" />
+          <Property Name="sec_id" Type="int" />
+          <Property Name="percnt" Type="int" />
+          <Property Name="type" Type="bit" />
+          <Property Name="status" Type="int" />
+          <Property Name="date" Type="datetime" />
+        </EntityType>
+        <EntityType Name="POLYGONS">
+          <Key>
+            <PropertyRef Name="poly_id" />
+          </Key>
+          <Property Name="poly_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sec_id" Type="int" />
+          <Property Name="lat_long" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="SECTORS">
+          <Key>
+            <PropertyRef Name="sec_id" />
+          </Key>
+          <Property Name="sec_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sec_name" Type="varchar" MaxLength="50" />
+          <Property Name="threshold" Type="int" />
+          <Property Name="description" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="USERs">
+          <Key>
+            <PropertyRef Name="user_id" />
+          </Key>
+          <Property Name="user_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sec_id" Type="int" />
+          <Property Name="name" Type="varchar" MaxLength="20" />
+          <Property Name="email" Type="varchar" MaxLength="40" />
+          <Property Name="phone_number" Type="varchar" MaxLength="20" />
+          <Property Name="password" Type="varchar" MaxLength="20" />
+          <Property Name="role" Type="varchar" MaxLength="10" />
+          <Property Name="image" Type="varchar(max)" />
+          <Property Name="home_location" Type="varchar(max)" />
+          <Property Name="office_location" Type="varchar(max)" />
+        </EntityType>
+        <EntityContainer Name="ProjectModelStoreContainer">
+          <EntitySet Name="ACTION_LOGS" EntityType="Self.ACTION_LOGS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ASSIGNSECTORS" EntityType="Self.ASSIGNSECTORS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CASES_LOGS" EntityType="Self.CASES_LOGS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="NOTIFICATIONs" EntityType="Self.NOTIFICATIONs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="POLYGONS" EntityType="Self.POLYGONS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SECTORS" EntityType="Self.SECTORS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="USERs" EntityType="Self.USERs" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ProjectModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -113,7 +114,7 @@
           <Property Name="case_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="user_id" Type="Int32" />
           <Property Name="status" Type="Boolean" />
-          <Property Name="startdate" Type="DateTime" Precision="3" Nullable="false" />
+          <Property Name="startdate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="enddate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="NOTIFICATION">
@@ -121,12 +122,12 @@
             <PropertyRef Name="notif_id" />
           </Key>
           <Property Name="notif_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="type" Type="Boolean" />
-          <Property Name="date" Type="DateTime" Precision="3" />
-          <Property Name="status" Type="Int16" />
           <Property Name="user_id" Type="Int32" />
           <Property Name="sec_id" Type="Int32" />
           <Property Name="percnt" Type="Int32" />
+          <Property Name="type" Type="Boolean" />
+          <Property Name="status" Type="Int32" />
+          <Property Name="date" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="POLYGON">
           <Key>
@@ -173,88 +174,89 @@
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-  <EntityContainerMapping StorageEntityContainer="ProjectModelStoreContainer" CdmEntityContainer="ProjectEntities">
-    <EntitySetMapping Name="ACTION_LOGS">
-      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.ACTION_LOGS)">
-        <MappingFragment StoreEntitySet="ACTION_LOGS">
-          <ScalarProperty Name="action_id" ColumnName="action_id" />
-          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
-          <ScalarProperty Name="date" ColumnName="date" />
-          <ScalarProperty Name="act_status" ColumnName="act_status" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="ASSIGNSECTORS">
-      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.ASSIGNSECTOR)">
-        <MappingFragment StoreEntitySet="ASSIGNSECTORS">
-          <ScalarProperty Name="ass_id" ColumnName="ass_id" />
-          <ScalarProperty Name="user_id" ColumnName="user_id" />
-          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="CASES_LOGS">
-      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.CASES_LOGS)">
-        <MappingFragment StoreEntitySet="CASES_LOGS">
-          <ScalarProperty Name="case_id" ColumnName="case_id" />
-          <ScalarProperty Name="user_id" ColumnName="user_id" />
-          <ScalarProperty Name="status" ColumnName="status" />
-          <ScalarProperty Name="startdate" ColumnName="startdate" />
-          <ScalarProperty Name="enddate" ColumnName="enddate" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="NOTIFICATIONs">
-      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.NOTIFICATION)">
-        <MappingFragment StoreEntitySet="NOTIFICATIONs">
-          <ScalarProperty Name="notif_id" ColumnName="notif_id" />
-          <ScalarProperty Name="type" ColumnName="type" />
-          <ScalarProperty Name="date" ColumnName="date" />
-          <ScalarProperty Name="status" ColumnName="status" />
-          <ScalarProperty Name="user_id" ColumnName="user_id" />
-          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
-          <ScalarProperty Name="percnt" ColumnName="percnt" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="POLYGONS">
-      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.POLYGON)">
-        <MappingFragment StoreEntitySet="POLYGONS">
-          <ScalarProperty Name="poly_id" ColumnName="poly_id" />
-          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
-          <ScalarProperty Name="lat_long" ColumnName="lat_long" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="SECTORS">
-      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.SECTOR)">
-        <MappingFragment StoreEntitySet="SECTORS">
-          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
-          <ScalarProperty Name="sec_name" ColumnName="sec_name" />
-          <ScalarProperty Name="threshold" ColumnName="threshold" />
-          <ScalarProperty Name="description" ColumnName="description" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="USERs">
-      <EntityTypeMapping TypeName="IsTypeOf(ProjectModel.USER)">
-        <MappingFragment StoreEntitySet="USERs">
-          <ScalarProperty Name="user_id" ColumnName="user_id" />
-          <ScalarProperty Name="sec_id" ColumnName="sec_id" />
-          <ScalarProperty Name="name" ColumnName="name" />
-          <ScalarProperty Name="email" ColumnName="email" />
-          <ScalarProperty Name="phone_number" ColumnName="phone_number" />
-          <ScalarProperty Name="password" ColumnName="password" />
-          <ScalarProperty Name="role" ColumnName="role" />
-          <ScalarProperty Name="image" ColumnName="image" />
-          <ScalarProperty Name="home_location" ColumnName="home_location" />
-          <ScalarProperty Name="office_location" ColumnName="office_location" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-  </EntityContainerMapping>
-</Mapping></edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ProjectModelStoreContainer" CdmEntityContainer="ProjectEntities">
+          <EntitySetMapping Name="ACTION_LOGS">
+            <EntityTypeMapping TypeName="ProjectModel.ACTION_LOGS">
+              <MappingFragment StoreEntitySet="ACTION_LOGS">
+                <ScalarProperty Name="action_id" ColumnName="action_id" />
+                <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="act_status" ColumnName="act_status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ASSIGNSECTORS">
+            <EntityTypeMapping TypeName="ProjectModel.ASSIGNSECTOR">
+              <MappingFragment StoreEntitySet="ASSIGNSECTORS">
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+                <ScalarProperty Name="ass_id" ColumnName="ass_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CASES_LOGS">
+            <EntityTypeMapping TypeName="ProjectModel.CASES_LOGS">
+              <MappingFragment StoreEntitySet="CASES_LOGS">
+                <ScalarProperty Name="case_id" ColumnName="case_id" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="startdate" ColumnName="startdate" />
+                <ScalarProperty Name="enddate" ColumnName="enddate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NOTIFICATIONs">
+            <EntityTypeMapping TypeName="ProjectModel.NOTIFICATION">
+              <MappingFragment StoreEntitySet="NOTIFICATIONs">
+                <ScalarProperty Name="notif_id" ColumnName="notif_id" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+                <ScalarProperty Name="percnt" ColumnName="percnt" />
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="date" ColumnName="date" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="POLYGONS">
+            <EntityTypeMapping TypeName="ProjectModel.POLYGON">
+              <MappingFragment StoreEntitySet="POLYGONS">
+                <ScalarProperty Name="poly_id" ColumnName="poly_id" />
+                <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+                <ScalarProperty Name="lat_long" ColumnName="lat_long" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SECTORS">
+            <EntityTypeMapping TypeName="ProjectModel.SECTOR">
+              <MappingFragment StoreEntitySet="SECTORS">
+                <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+                <ScalarProperty Name="sec_name" ColumnName="sec_name" />
+                <ScalarProperty Name="threshold" ColumnName="threshold" />
+                <ScalarProperty Name="description" ColumnName="description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="USERs">
+            <EntityTypeMapping TypeName="ProjectModel.USER">
+              <MappingFragment StoreEntitySet="USERs">
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="sec_id" ColumnName="sec_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="phone_number" ColumnName="phone_number" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="role" ColumnName="role" />
+                <ScalarProperty Name="image" ColumnName="image" />
+                <ScalarProperty Name="home_location" ColumnName="home_location" />
+                <ScalarProperty Name="office_location" ColumnName="office_location" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
   <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
@@ -268,7 +270,7 @@
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="true" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
-        <DesignerProperty Name="UseLegacyProvider" Value="False" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
     </Options>

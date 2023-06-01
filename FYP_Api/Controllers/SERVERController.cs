@@ -92,6 +92,9 @@ namespace FYP_Api.Controllers
                     user.office_location = request["office_location"];
 
                     db.SaveChanges();
+                    //
+                    new Thread(() => SetNotification(user.user_id)).Start();
+
 
                     return Request.CreateResponse(HttpStatusCode.OK, "Updated");
                 }
@@ -164,6 +167,7 @@ namespace FYP_Api.Controllers
                     if (user.enddate == null && status == false)
                     {
                         user.enddate = DateTime.Now;
+                        user.status = status;
                     }
                     else
                     {
@@ -189,10 +193,6 @@ namespace FYP_Api.Controllers
 
 
 
-
-
-
-
         private void SetNotification(int userId)
         {
             try
@@ -206,7 +206,15 @@ namespace FYP_Api.Controllers
                 var percentage = (cases.Count * 100) / sector.threshold;
 
                 NOTIFICATION nOTIFICATION = new NOTIFICATION();
+                //
                 nOTIFICATION.date = DateTime.Now;
+                //nOTIFICATION.percnt = percentage;
+                nOTIFICATION.sec_id = user.sec_id;
+                nOTIFICATION.status = 0;
+                nOTIFICATION.user_id = user.user_id;
+                db.NOTIFICATIONs.Add(nOTIFICATION);
+                db.SaveChanges();
+
                 if (percentage == 25)
                 {
                     nOTIFICATION.percnt = percentage;
@@ -359,14 +367,18 @@ namespace FYP_Api.Controllers
 
                 if (user.role == "user")
                 {
-                    sectorBased = db.NOTIFICATIONs.Where(s => s.sec_id == user.sec_id).ToList();
+                    sectorBased = db.NOTIFICATIONs.Where(s => s.sec_id == user.sec_id && s.type != null).ToList();
 
                     foreach (var notification in db.NOTIFICATIONs)
                     {
-                        var user2 = db.USERs.Find(notification.user_id);
-                        if (CalculateDistance(user.home_location.Split(',')[0], user.home_location.Split(',')[1], user2.home_location.Split(',')[0], user2.home_location.Split(',')[1]) <= radius)
+                        if (notification.type == null)
                         {
-                            locationBased.Add(notification);
+                            var user2 = db.USERs.Find(notification.user_id);
+                            // var user2 = db.USERs.Where(s => s.user_id == notification.user_id);
+                            if (CalculateDistance(user.home_location.Split(',')[0], user.home_location.Split(',')[1], user2.home_location.Split(',')[0], user2.home_location.Split(',')[1]) <= radius)
+                            {
+                                locationBased.Add(notification);
+                            }
                         }
                     }
                 }
@@ -375,12 +387,12 @@ namespace FYP_Api.Controllers
                     var sectors = db.ASSIGNSECTORS.Where(s => s.user_id == user.user_id).ToList();
                     foreach (var sector in sectors)
                     {
-                        sectorBased.AddRange(db.NOTIFICATIONs.Where(s => s.sec_id == sector.sec_id).ToList());
+                        sectorBased.AddRange(db.NOTIFICATIONs.Where(s => s.sec_id == sector.sec_id && s.type != null).ToList());
                     }
                 }
                 else
                 {
-                    sectorBased = db.NOTIFICATIONs.ToList();
+                    sectorBased = db.NOTIFICATIONs.Where(s => s.type != null).ToList();
                 }
 
                 var locationBasedCount = locationBased.Count;
@@ -588,76 +600,78 @@ namespace FYP_Api.Controllers
         }
 
         //----------------------------------------------------------------------------//
-        /* [HttpGet]
-         public HttpResponseMessage Login(string email, string password)
-         {
-             try
-             {
-                 if (!isRunning)
-                 {
-                     isRunning = true;
-                     new Thread(setStatus).Start();
-                 }
-                 var user = db.USERs.Where(s => s.email == email && s.password == password).FirstOrDefault();
-                 if (user == null)
-                 {
-                     return Request.CreateResponse(HttpStatusCode.OK, "false");
-                 }
-                 else if (user.role.ToLower() == "user")
-                 {
+        [HttpGet]
 
-                     var result = from u in db.USERs
-                                  join c in db.CASES_LOGS
-                                      on u.user_id equals c.user_id into caselogs
-                                  from c in caselogs.DefaultIfEmpty()
-                                  join s in db.SECTORS on u.sec_id equals s.sec_id
-                                  where u.email == email && u.password == password
-                                  select new
-                                  {
-                                      u.user_id,
-                                      u.name,
-                                      u.email,
-                                      u.phone_number,
-                                      u.image,
-                                      u.role,
-                                      u.home_location,
-                                      u.office_location,
-                                      u.sec_id,
-                                      s.sec_name,
-                                      s.description,
-                                      startdate = (DateTime?)c.startdate,
-                                      status = (bool?)(c != null ? c.status : false),
-                                      enddate = (DateTime?)c.enddate
-                                  };
-                     return Request.CreateResponse(HttpStatusCode.OK, result);
-                 }
-                 else
-                 {
+        public HttpResponseMessage Login(string email, string password)
+        {
+            try
+            {
+                if (!isRunning)
+                {
+                    isRunning = true;
+                    new Thread(setStatus).Start();
+                }
+                var user = db.USERs.Where(s => s.email == email && s.password == password).FirstOrDefault();
+                if (user == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, "false");
+                }
+                else if (user.role.ToLower() == "user")
+                {
 
-                     var admin = from u in db.USERs.Where(s => s.email == email && s.password == password)
+                    var result = from u in db.USERs
+                                 join c in db.CASES_LOGS
+                                     on u.user_id equals c.user_id into caselogs
+                                 from c in caselogs.DefaultIfEmpty()
+                                 join s in db.SECTORS on u.sec_id equals s.sec_id
+                                 where u.email == email && u.password == password
                                  select new
                                  {
                                      u.user_id,
-                                     u.image,
                                      u.name,
                                      u.email,
                                      u.phone_number,
+                                     u.image,
                                      u.role,
                                      u.home_location,
                                      u.office_location,
                                      u.sec_id,
+                                     s.sec_name,
+                                     s.description,
+                                     startdate = (DateTime?)c.startdate,
+                                     status = (bool?)(c != null ? c.status : false),
+                                     enddate = (DateTime?)c.enddate
                                  };
-                     return Request.CreateResponse(HttpStatusCode.OK, admin);
-                 }
-             }
-             catch (Exception ex)
-             {
-                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-             }
-         }
- */
+                    return Request.CreateResponse(HttpStatusCode.OK, result);
+                }
+                else
+                {
 
-        //[HttpGet]
+                    var admin = from u in db.USERs.Where(s => s.email == email && s.password == password)
+                                select new
+                                {
+                                    u.user_id,
+                                    u.image,
+                                    u.name,
+                                    u.email,
+                                    u.phone_number,
+                                    u.role,
+                                    u.home_location,
+                                    u.office_location,
+                                    u.sec_id,
+                                };
+                    return Request.CreateResponse(HttpStatusCode.OK, admin);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
+        // [HttpGet]
+
         //public HttpResponseMessage Login(string email, string password)
         //{
         //    try
@@ -759,7 +773,7 @@ namespace FYP_Api.Controllers
 
 
         [HttpGet]
-        public HttpResponseMessage Login(string email, string password)
+        public HttpResponseMessage Login2(string email, string password)
         {
             try
             {
@@ -970,6 +984,10 @@ namespace FYP_Api.Controllers
                         .Count(s => s.startdate.Date == minimumDate.Date ||
                                     (s.startdate.Date < minimumDate.Date && (s.enddate == null || s.enddate >= minimumDate)));
 
+                    /*caseData.count = db.CASES_LOGS.AsEnumerable()
+                        .Count(s => s.startdate.Date <= minimumDate.Date &&
+                                   (s.enddate == null || s.enddate >= minimumDate));
+*/
                     cases.Add(caseData);
                     minimumDate = minimumDate.AddDays(1);
                 }
@@ -1996,7 +2014,9 @@ namespace FYP_Api.Controllers
                     var usersInSector = db.USERs.Where(u => u.sec_id == sector.sec_id && u.role == "user");
 
                     // Get the case logs for the users in the current sector
-                    var caseLogs = db.CASES_LOGS.Where(c => usersInSector.Any(u => u.user_id == c.user_id) && c.status == true);
+                    //var caseLogs = db.CASES_LOGS.Where(c => usersInSector.Any(u => u.user_id == c.user_id) && c.status == true);
+                    var caseLogs = db.CASES_LOGS.Where(c => usersInSector.Any(u => u.user_id == c.user_id));
+
 
                     // Count the number of case logs in the current sector
                     var numCases = caseLogs.Count();
@@ -2040,7 +2060,9 @@ namespace FYP_Api.Controllers
                 var result = from u in db.USERs
                              join s in db.SECTORS on u.sec_id equals s.sec_id
                              let sector_users = db.USERs.Where(us => us.sec_id == u.sec_id)
-                             let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id) && c.status == true)
+                             let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id))
+                             //let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id) && c.status == true)
+
                              select new
                              {
                                  user_id = u.user_id,
@@ -2101,7 +2123,8 @@ namespace FYP_Api.Controllers
                              join a in db.ASSIGNSECTORS on u.user_id equals a.user_id
                              join s in db.SECTORS on a.sec_id equals s.sec_id
                              let sector_users = db.USERs.Where(us => us.sec_id == s.sec_id)
-                             let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id) && c.status == true)
+                             let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id))
+                             //let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id) && c.status == true)
 
                              select new
                              {

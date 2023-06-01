@@ -225,40 +225,40 @@
     </Compile>
     <Compile Include="HelperClasses\CasesHelperClass.cs" />
     <Compile Include="Models\ACTION_LOGS.cs">
-      <DependentUpon>Project.tt</DependentUpon>
+      <DependentUpon>project.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ASSIGNSECTOR.cs">
-      <DependentUpon>Project.tt</DependentUpon>
+      <DependentUpon>project.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\CASES_LOGS.cs">
-      <DependentUpon>Project.tt</DependentUpon>
+      <DependentUpon>project.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\NOTIFICATION.cs">
-      <DependentUpon>Project.tt</DependentUpon>
+      <DependentUpon>project.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\POLYGON.cs">
-      <DependentUpon>Project.tt</DependentUpon>
+      <DependentUpon>project.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Project.Context.cs">
+    <Compile Include="Models\project.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Project.Context.tt</DependentUpon>
+      <DependentUpon>project.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Project.cs">
+    <Compile Include="Models\project.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Project.tt</DependentUpon>
+      <DependentUpon>project.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Project.Designer.cs">
+    <Compile Include="Models\project.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Project.edmx</DependentUpon>
+      <DependentUpon>project.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\SECTOR.cs">
-      <DependentUpon>Project.tt</DependentUpon>
+      <DependentUpon>project.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\USER.cs">
-      <DependentUpon>Project.tt</DependentUpon>
+      <DependentUpon>project.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -282,16 +282,16 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Models\Project.Context.tt">
+    <Content Include="Models\project.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Project.edmx</DependentUpon>
-      <LastGenOutput>Project.Context.cs</LastGenOutput>
+      <DependentUpon>project.edmx</DependentUpon>
+      <LastGenOutput>project.Context.cs</LastGenOutput>
     </Content>
     <Content Include="Models\Project.edmx.sql" />
-    <Content Include="Models\Project.tt">
+    <Content Include="Models\project.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Project.edmx</DependentUpon>
-      <LastGenOutput>Project.cs</LastGenOutput>
+      <DependentUpon>project.edmx</DependentUpon>
+      <LastGenOutput>project.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -318,12 +318,12 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
-    <EntityDeploy Include="Models\Project.edmx">
+    <EntityDeploy Include="Models\project.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Project.Designer.cs</LastGenOutput>
+      <LastGenOutput>project.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Models\Project.edmx.diagram">
-      <DependentUpon>Project.edmx</DependentUpon>
+    <Content Include="Models\project.edmx.diagram">
+      <DependentUpon>project.edmx</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
