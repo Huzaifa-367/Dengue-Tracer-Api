@@ -1,12 +1,8 @@
 ﻿using FYP_Api.HelperClasses;
 using FYP_Api.Models;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects;
-using System.Data.Entity.SqlServer;
-using System.Data.Entity.Validation;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -15,12 +11,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading;
 using System.Web;
-using System.Web.Configuration;
 using System.Web.Http;
-using System.Web.Http.Results;
-using Windows.System;
-using Windows.UI.Notifications;
-using Windows.UI.Xaml.Shapes;
 
 
 

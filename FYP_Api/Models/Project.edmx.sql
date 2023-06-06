@@ -2,8 +2,8 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 05/26/2023 16:43:57
--- Generated from EDMX file: E:\FYP\Dengue-Tracer-Api\FYP_Api\Models\Project.edmx
+-- Date Created: 06/02/2023 14:34:33
+-- Generated from EDMX file: E:\FYP\Dengue-Tracer-Api\FYP_Api\Models\project.edmx
 -- --------------------------------------------------
 
 SET QUOTED_IDENTIFIER OFF;
@@ -78,12 +78,12 @@ GO
 -- Creating table 'NOTIFICATIONs'
 CREATE TABLE [dbo].[NOTIFICATIONs] (
     [notif_id] int IDENTITY(1,1) NOT NULL,
-    [type] bit  NULL,
-    [date] datetime  NULL,
-    [status] smallint  NULL,
     [user_id] int  NULL,
     [sec_id] int  NULL,
-    [percnt] int  NULL
+    [percnt] int  NULL,
+    [type] bit  NULL,
+    [status] int  NULL,
+    [date] datetime  NULL
 );
 GO
 
