@@ -1,20 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Schema Namespace="ProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+<Schema Namespace="ProjectModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="ProjectModelStoreContainer">
+    <EntitySet Name="ACTION_LOGS" EntityType="ProjectModel.Store.ACTION_LOGS" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="ASSIGNSECTORS" EntityType="ProjectModel.Store.ASSIGNSECTORS" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="CASES_LOGS" EntityType="ProjectModel.Store.CASES_LOGS" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="NOTIFICATIONs" EntityType="ProjectModel.Store.NOTIFICATIONs" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="POLYGONS" EntityType="ProjectModel.Store.POLYGONS" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="SECTORS" EntityType="ProjectModel.Store.SECTORS" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="USERs" EntityType="ProjectModel.Store.USERs" store:Type="Tables" Schema="dbo" />
+  </EntityContainer>
   <EntityType Name="ACTION_LOGS">
     <Key>
       <PropertyRef Name="action_id" />
     </Key>
     <Property Name="action_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="sec_id" Type="int" />
-    <Property Name="date" Type="datetime" />
-    <Property Name="act_status" Type="bit" />
+    <Property Name="sec_id" Type="int" Nullable="true" />
+    <Property Name="date" Type="datetime" Nullable="true" />
+    <Property Name="act_status" Type="bit" Nullable="true" />
   </EntityType>
   <EntityType Name="ASSIGNSECTORS">
     <Key>
       <PropertyRef Name="ass_id" />
     </Key>
-    <Property Name="user_id" Type="int" />
-    <Property Name="sec_id" Type="int" />
+    <Property Name="user_id" Type="int" Nullable="true" />
+    <Property Name="sec_id" Type="int" Nullable="true" />
     <Property Name="ass_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
   </EntityType>
   <EntityType Name="CASES_LOGS">
@@ -22,62 +31,53 @@
       <PropertyRef Name="case_id" />
     </Key>
     <Property Name="case_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="user_id" Type="int" />
-    <Property Name="status" Type="bit" />
+    <Property Name="user_id" Type="int" Nullable="true" />
+    <Property Name="status" Type="bit" Nullable="true" />
     <Property Name="startdate" Type="datetime" Nullable="false" />
-    <Property Name="enddate" Type="datetime" />
+    <Property Name="enddate" Type="datetime" Nullable="true" />
   </EntityType>
   <EntityType Name="NOTIFICATIONs">
     <Key>
       <PropertyRef Name="notif_id" />
     </Key>
     <Property Name="notif_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="user_id" Type="int" />
-    <Property Name="sec_id" Type="int" />
-    <Property Name="percnt" Type="int" />
-    <Property Name="type" Type="bit" />
-    <Property Name="status" Type="int" />
-    <Property Name="date" Type="datetime" />
+    <Property Name="user_id" Type="int" Nullable="true" />
+    <Property Name="sec_id" Type="int" Nullable="true" />
+    <Property Name="percnt" Type="int" Nullable="true" />
+    <Property Name="type" Type="bit" Nullable="true" />
+    <Property Name="status" Type="int" Nullable="true" />
+    <Property Name="date" Type="datetime" Nullable="true" />
   </EntityType>
   <EntityType Name="POLYGONS">
     <Key>
       <PropertyRef Name="poly_id" />
     </Key>
     <Property Name="poly_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="sec_id" Type="int" />
-    <Property Name="lat_long" Type="varchar(max)" />
+    <Property Name="sec_id" Type="int" Nullable="true" />
+    <Property Name="lat_long" Type="varchar(max)" Nullable="true" />
   </EntityType>
   <EntityType Name="SECTORS">
     <Key>
       <PropertyRef Name="sec_id" />
     </Key>
     <Property Name="sec_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="sec_name" Type="varchar" MaxLength="50" />
-    <Property Name="threshold" Type="int" />
-    <Property Name="description" Type="varchar(max)" />
+    <Property Name="sec_name" Type="varchar" Nullable="true" MaxLength="50" />
+    <Property Name="threshold" Type="int" Nullable="true" />
+    <Property Name="description" Type="varchar(max)" Nullable="true" />
   </EntityType>
   <EntityType Name="USERs">
     <Key>
       <PropertyRef Name="user_id" />
     </Key>
     <Property Name="user_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="sec_id" Type="int" />
-    <Property Name="name" Type="varchar" MaxLength="20" />
-    <Property Name="email" Type="varchar" MaxLength="40" />
-    <Property Name="phone_number" Type="varchar" MaxLength="20" />
-    <Property Name="password" Type="varchar" MaxLength="20" />
-    <Property Name="role" Type="varchar" MaxLength="10" />
-    <Property Name="image" Type="varchar(max)" />
-    <Property Name="home_location" Type="varchar(max)" />
-    <Property Name="office_location" Type="varchar(max)" />
+    <Property Name="sec_id" Type="int" Nullable="true" />
+    <Property Name="name" Type="varchar" Nullable="true" MaxLength="20" />
+    <Property Name="email" Type="varchar" Nullable="true" MaxLength="40" />
+    <Property Name="phone_number" Type="varchar" Nullable="true" MaxLength="20" />
+    <Property Name="password" Type="varchar" Nullable="true" MaxLength="20" />
+    <Property Name="role" Type="varchar" Nullable="true" MaxLength="10" />
+    <Property Name="image" Type="varchar(max)" Nullable="true" />
+    <Property Name="home_location" Type="varchar(max)" Nullable="true" />
+    <Property Name="office_location" Type="varchar(max)" Nullable="true" />
   </EntityType>
-  <EntityContainer Name="ProjectModelStoreContainer">
-    <EntitySet Name="ACTION_LOGS" EntityType="Self.ACTION_LOGS" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="ASSIGNSECTORS" EntityType="Self.ASSIGNSECTORS" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="CASES_LOGS" EntityType="Self.CASES_LOGS" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="NOTIFICATIONs" EntityType="Self.NOTIFICATIONs" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="POLYGONS" EntityType="Self.POLYGONS" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="SECTORS" EntityType="Self.SECTORS" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="USERs" EntityType="Self.USERs" Schema="dbo" store:Type="Tables" />
-  </EntityContainer>
 </Schema>

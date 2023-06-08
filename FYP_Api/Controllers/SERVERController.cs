@@ -469,6 +469,70 @@ namespace FYP_Api.Controllers
 
 
 
+
+        [HttpPost]
+        public HttpResponseMessage TakeAction(int sec_id)
+        {
+            try
+            {
+                HttpRequest request = HttpContext.Current.Request;
+
+                DateTime dat = DateTime.Now;
+                var dt = dat.Date.ToShortDateString();
+                ACTION_LOGS newact = new ACTION_LOGS
+                {
+                    sec_id = sec_id,
+                    date = DateTime.Parse(dt),
+
+                };
+
+
+                db.ACTION_LOGS.Add(newact);
+                db.SaveChanges();
+                return Request.CreateResponse(HttpStatusCode.OK, "Created");
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
+
+        [HttpGet]
+        public HttpResponseMessage ShowActionsTaken(int sec_id)
+        {
+            try
+            {
+                List<ACTION_LOGS> sectorBased = new List<ACTION_LOGS>();
+
+                sectorBased = db.ACTION_LOGS.Where(s => s.sec_id == sec_id).ToList();
+                if (sectorBased == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, "Empty");
+                }
+
+                var sectorBasedResponse = sectorBased.OrderByDescending(s => s.date)
+                    .Select(s => new
+                    {
+                        s.date,
+                        s.sec_id,
+                        s.act_status,
+                    });
+
+                return Request.CreateResponse(HttpStatusCode.OK, new
+                {
+                    sectorBased = sectorBasedResponse,
+                });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
+
         /*
                 [HttpPost]
                 public HttpResponseMessage CreateNotification(int sec_id, bool status)
