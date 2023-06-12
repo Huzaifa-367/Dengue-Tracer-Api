@@ -1793,6 +1793,73 @@ namespace FYP_Api.Controllers
         }
 
 
+
+        [HttpGet]
+        public IHttpActionResult GetDengueUsersByDate3(int daysToSubtract)
+        {
+            try
+            {
+                ProjectEntities db = new ProjectEntities();
+                List<DengueUserHelperClass> dengueUsers = new List<DengueUserHelperClass>();
+                DateTime currentDate = DateTime.Today.AddDays(-daysToSubtract);
+
+                // var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
+                var minimumDate = DateTime.Today.AddDays(-60); // Set minimumDate to current date minus 60 days
+
+
+                while (minimumDate <= currentDate)
+                {
+                    DengueUserHelperClass user = new DengueUserHelperClass();
+                    user.date = minimumDate;
+
+                    // Query to retrieve Dengue Users for the current date
+                    var usersForDate = from u in db.USERs
+                                       join c in db.CASES_LOGS on u.user_id equals c.user_id
+                                       join s in db.SECTORS on u.sec_id equals s.sec_id
+                                       where (DbFunctions.TruncateTime(c.startdate) == minimumDate.Date ||
+                                              (DbFunctions.TruncateTime(c.startdate) < minimumDate.Date && (c.enddate == null || c.enddate >= minimumDate)))
+                                       select new DengueUser
+                                       {
+                                           user_id = u.user_id,
+                                           name = u.name,
+                                           home_location = u.home_location,
+
+                                           /*  email = u.email,
+                                             phone_number = u.phone_number,
+                                             role = u.role,
+                                             home_location = u.home_location,
+                                             office_location = u.office_location,
+                                             sec_id = u.sec_id ?? 0,  // Convert nullable int? to int
+                                             sec_name = s.sec_name,
+                                             description = s.description,
+                                             startdate = c.startdate,
+                                             status = c.status.ToString(),
+                                             enddate = c.enddate*/
+                                       };
+
+                    user.users = usersForDate.ToList();
+                    user.userCount = usersForDate.Count();
+
+                    dengueUsers.Add(user);
+                    minimumDate = minimumDate.AddDays(1);
+                }
+
+
+                var result = new
+                {
+                    dengueUsers = dengueUsers.OrderByDescending(s => s.date),
+                    maxValue = dengueUsers.Max(s => s.userCount) + 5
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
         //----------------------------------------------------------------------------//
 
 
