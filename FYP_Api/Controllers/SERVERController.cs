@@ -1018,6 +1018,9 @@ namespace FYP_Api.Controllers
 
         //----------------------------------------------------------------------------//
 
+
+        //Dengue Chart
+
         [HttpGet]
         public IHttpActionResult GetDengueCasesByDate()
         {
@@ -1791,6 +1794,79 @@ namespace FYP_Api.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        [HttpGet]
+        public HttpResponseMessage GetDengueUsersSameSector(int sec_id)
+        {
+            try
+            {
+                var lst = db.USERs.Where(u => u.role == "user");
+
+                var result = from u in lst
+                             join c in db.CASES_LOGS on u.user_id equals c.user_id
+                             join s in db.SECTORS on u.sec_id equals s.sec_id
+                             where s.sec_id == sec_id // Add condition to filter cases within the same sector
+                             select new
+                             {
+                                 u.user_id,
+                                 u.name,
+                                 u.email,
+                                 u.phone_number,
+                                 u.role,
+                                 u.home_location,
+                                 u.office_location,
+                                 u.sec_id,
+                                 s.sec_name,
+                                 s.description,
+                                 c.startdate,
+                                 c.status,
+                                 c.enddate
+                             };
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage GetDengueUsersSameSectorOfficer()
+        {
+            try
+            {
+                var lst = db.USERs.Where(u => u.role == "user");
+
+                var result = from u in lst
+                             join c in db.CASES_LOGS on u.user_id equals c.user_id
+                             join s in db.SECTORS on u.sec_id equals s.sec_id
+                             where s.sec_id == u.sec_id // Add condition to filter cases within the same sector
+                             select new
+                             {
+                                 u.user_id,
+                                 u.name,
+                                 u.email,
+                                 u.phone_number,
+                                 u.role,
+                                 u.home_location,
+                                 u.office_location,
+                                 u.sec_id,
+                                 s.sec_name,
+                                 s.description,
+                                 c.startdate,
+                                 c.status,
+                                 c.enddate
+                             };
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
 
 
 
