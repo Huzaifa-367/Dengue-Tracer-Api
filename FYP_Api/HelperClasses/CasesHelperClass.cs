@@ -38,6 +38,12 @@ namespace FYP_Api.HelperClasses
         public int userCount { get; set; }
     }
 
+    public class DenguecountHelperClass
+    {
+        public DateTime date { get; set; }
+        public int userCount { get; set; }
+
+    }
     public class DengueUser
     {
         public int user_id { get; set; }

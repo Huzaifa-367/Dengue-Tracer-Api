@@ -1422,10 +1422,205 @@ namespace FYP_Api.Controllers
 
 
 
+
+        ////
+        ////
+        /// <summary>
+        /// 
+        /// 
+        /// </summary>
+        /// <param name="latitude"></param>
+        /// <param name="longitude"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>        /////
+
+        /*public HttpResponseMessage GetCasesByLocationRadius(double latitude, double longitude, double radius)
+        {
+            try
+            {
+                // Retrieve users from the database
+                var users = db.USERs.Where(s => s.role == "user").ToList();
+                var usersForDate = from u in users.AsEnumerable()
+                                   join c in db.CASES_LOGS.AsEnumerable() on u.user_id equals c.user_id
+                                   join s in db.SECTORS.AsEnumerable() on u.sec_id equals s.sec_id
+                                   where (DbFunctions.TruncateTime(c.startdate) == minimumDate.Date ||
+                                          (DbFunctions.TruncateTime(c.startdate) < minimumDate.Date && (c.enddate == null || c.enddate >= minimumDate)))
+                                   select new DengueUser
+                                   {
+                                       user_id = u.user_id,
+                                       name = u.name,
+                                       home_location = u.home_location,
+
+                                       *//*  email = u.email,
+                                         phone_number = u.phone_number,
+                                         role = u.role,
+                                         home_location = u.home_location,
+                                         office_location = u.office_location,
+                                         sec_id = u.sec_id ?? 0,  // Convert nullable int? to int
+                                         sec_name = s.sec_name,
+                                         description = s.description,
+                                         startdate = c.startdate,
+                                         status = c.status.ToString(),
+                                         enddate = c.enddate*//*
+                                   };
+                // Perform distance calculation in memory
+                var cases = users.AsEnumerable()
+                    .Where(u => CalculateDistance(latitude, longitude, double.Parse(u.home_location.Split(',')[0]), double.Parse(u.home_location.Split(',')[1])) <= radius)
+                    .Select(u => new
+                    {
+                        u.user_id,
+                        u.name,
+                        u.email,
+                        u.phone_number,
+                        u.role,
+                        u.home_location,
+                        u.office_location,
+                        //cases = db.CASES_LOGS.Where(c => c.user_id == u.user_id).ToList()
+                    }).ToList();
+
+                return Request.CreateResponse(HttpStatusCode.OK, cases);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }*/
+
+
+
+        [HttpGet]
+        public IHttpActionResult GetDengueUsersByDate0(int daysToSubtract)
+        {
+            try
+            {
+                ProjectEntities db = new ProjectEntities();
+                List<DengueUserHelperClass> dengueUsers = new List<DengueUserHelperClass>();
+                DateTime currentDate = DateTime.Today.AddDays(-daysToSubtract);
+
+                // var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
+                var minimumDate = DateTime.Today.AddDays(-60); // Set minimumDate to current date minus 60 days
+
+
+                while (minimumDate <= currentDate)
+                {
+                    DengueUserHelperClass user = new DengueUserHelperClass();
+                    user.date = minimumDate;
+
+                    // Query to retrieve Dengue Users for the current date
+                    var usersForDate = from u in db.USERs
+                                       join c in db.CASES_LOGS on u.user_id equals c.user_id
+                                       join s in db.SECTORS on u.sec_id equals s.sec_id
+                                       where (DbFunctions.TruncateTime(c.startdate) == minimumDate.Date ||
+                                              (DbFunctions.TruncateTime(c.startdate) < minimumDate.Date && (c.enddate == null || c.enddate >= minimumDate)))
+                                       select new DengueUser
+                                       {
+                                           user_id = u.user_id,
+                                           name = u.name,
+                                           home_location = u.home_location,
+
+                                           /*  email = u.email,
+                                             phone_number = u.phone_number,
+                                             role = u.role,
+                                             home_location = u.home_location,
+                                             office_location = u.office_location,
+                                             sec_id = u.sec_id ?? 0,  // Convert nullable int? to int
+                                             sec_name = s.sec_name,
+                                             description = s.description,
+                                             startdate = c.startdate,
+                                             status = c.status.ToString(),
+                                             enddate = c.enddate*/
+                                       };
+
+                    user.users = usersForDate.ToList();
+                    user.userCount = usersForDate.Count();
+
+                    dengueUsers.Add(user);
+                    minimumDate = minimumDate.AddDays(1);
+                }
+
+
+                var result = new
+                {
+                    dengueUsers = dengueUsers.OrderByDescending(s => s.date),
+                    maxValue = dengueUsers.Max(s => s.userCount) + 5
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
+
+        /*public HttpResponseMessage GetCasesByLocationRadius(double latitude, double longitude, double radius)
+        {
+            try
+            {
+                var cases = db.USERs
+                .Where(u => CalculateDistance(latitude, longitude, double.Parse(u.home_location.Split(',')[0]), double.Parse(u.home_location.Split(',')[1])) <= radius)
+                .Select(u => new
+                {
+                    u.user_id,
+                    u.name,
+                    u.email,
+                    u.phone_number,
+                    u.role,
+                    u.home_location,
+                    u.office_location,
+                    // Include any additional properties you need from the USERs table
+                    cases = db.CASES_LOGS.Where(c => c.user_id == u.user_id).ToList()
+                });
+
+                return Request.CreateResponse(HttpStatusCode.OK, cases);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }*/
+
+
+        private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+        {
+            // Use appropriate distance calculation algorithm here (e.g., Haversine formula)
+            // Implement the logic to calculate the distance between two coordinates
+            // and return the result in the desired unit (e.g., kilometers)
+            // This is just a sample implementation
+            double R = 6371; // Earth's radius in kilometers
+            double dLat = ToRadians(lat2 - lat1);
+            double dLon = ToRadians(lon2 - lon1);
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                       Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
+                       Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            double distance = R * c;
+
+            return distance;
+        }
+
+        /*  private double ToRadians(double degrees)
+          {
+              return degrees * Math.PI / 180;
+          }
+  */
+
+
+
+
+
+        /////
+        /////
+        /////
+
+
+
         /// <summary>
         ///
         /// </summary>
-        /// <param name=" "NOt working"daysToSubtract"></param>
+        /// <param name=" "working"daysToSubtract"></param>
         /// <returns></returns>
 
         [HttpGet]
@@ -1878,10 +2073,11 @@ namespace FYP_Api.Controllers
                 ProjectEntities db = new ProjectEntities();
                 List<DengueUserHelperClass> dengueUsers = new List<DengueUserHelperClass>();
                 DateTime currentDate = DateTime.Today.AddDays(-daysToSubtract);
+                //DateTime currentDate = DateTime.Today.Date;
 
                 // var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
                 var minimumDate = DateTime.Today.AddDays(-60); // Set minimumDate to current date minus 60 days
-
+                //var minimumDate = DateTime.Today.AddDays(-tilldays);
 
                 while (minimumDate <= currentDate)
                 {
@@ -1936,6 +2132,246 @@ namespace FYP_Api.Controllers
         }
 
 
+        [HttpGet]
+        public IHttpActionResult GetDengueUsersByDate32(/*int daysToSubtract,*/ int tilldays)
+        {
+            try
+            {
+                ProjectEntities db = new ProjectEntities();
+                List<DengueUserHelperClass> dengueUsers = new List<DengueUserHelperClass>();
+                // DateTime currentDate = DateTime.Today.AddDays(-daysToSubtract);
+                DateTime currentDate = DateTime.Today.Date;
+
+                // var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
+                //var minimumDate = DateTime.Today.AddDays(-60); // Set minimumDate to current date minus 60 days
+                var minimumDate = DateTime.Today.AddDays(-tilldays);
+
+                while (minimumDate <= currentDate)
+                {
+                    DengueUserHelperClass user = new DengueUserHelperClass();
+                    user.date = minimumDate;
+
+                    // Query to retrieve Dengue Users for the current date
+                    var usersForDate = from u in db.USERs
+                                       join c in db.CASES_LOGS on u.user_id equals c.user_id
+                                       join s in db.SECTORS on u.sec_id equals s.sec_id
+                                       where (DbFunctions.TruncateTime(c.startdate) == minimumDate.Date ||
+                                              (DbFunctions.TruncateTime(c.startdate) < minimumDate.Date && (c.enddate == null || c.enddate >= minimumDate)))
+                                       select new DengueUser
+                                       {
+                                           user_id = u.user_id,
+                                           name = u.name,
+                                           home_location = u.home_location,
+
+                                           /*  email = u.email,
+                                             phone_number = u.phone_number,
+                                             role = u.role,
+                                             home_location = u.home_location,
+                                             office_location = u.office_location,
+                                             sec_id = u.sec_id ?? 0,  // Convert nullable int? to int
+                                             sec_name = s.sec_name,
+                                             description = s.description,
+                                             startdate = c.startdate,
+                                             status = c.status.ToString(),
+                                             enddate = c.enddate*/
+                                       };
+
+                    user.users = usersForDate.ToList();
+                    user.userCount = usersForDate.Count();
+
+                    dengueUsers.Add(user);
+                    minimumDate = minimumDate.AddDays(1);
+                }
+
+
+                var result = new
+                {
+                    dengueUsers = dengueUsers.OrderByDescending(s => s.date),
+                    maxValue = dengueUsers.Max(s => s.userCount) + 5
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
+        [HttpGet]
+        public HttpResponseMessage GetAllSectors2(int tilldays)
+        {
+            try
+            {
+                // Retrieve all sectors from the database
+                var sectors = db.SECTORS.ToList();
+
+                // Create a list to store the sector data as JSON objects
+                var sectorData = new List<object>();
+
+                DateTime currentDate = DateTime.Today.Date;
+
+                // var minimumDate = db.CASES_LOGS.OrderBy(s => s.startdate).Select(s => s.startdate).FirstOrDefault();
+                //var minimumDate = DateTime.Today.AddDays(-60); // Set minimumDate to current date minus 60 days
+                var minimumDate = DateTime.Today.AddDays(-tilldays);
+
+                var latLongs = new List<string>();
+                var numCases = 0;
+                // Loop through each sector and extract the necessary data
+                foreach (var sector in sectors)
+                {  // Get the users in the current sector
+                    var usersInSector = db.USERs.Where(u => u.sec_id == sector.sec_id && u.role == "user");
+
+                    while (minimumDate <= currentDate)
+                    {
+                        // Get the case logs for the users in the current sector
+                        //var caseLogs = db.CASES_LOGS.Where(c => usersInSector.Any(u => u.user_id == c.user_id) && c.status == true);
+                        var caseLogs = db.CASES_LOGS.Where(c => usersInSector.Any(u => u.user_id == c.user_id) & (DbFunctions.TruncateTime(c.startdate) == minimumDate.Date ||
+                                              (DbFunctions.TruncateTime(c.startdate) < minimumDate.Date && (c.enddate == null || c.enddate >= minimumDate))
+                                              ));
+
+                        // Count the number of case logs in the current sector
+                        numCases = caseLogs.Count();
+
+                        minimumDate = minimumDate.AddDays(1);
+                    }
+                    var polygons = db.POLYGONS.Where(p => p.sec_id == sector.sec_id).ToList();
+
+                    latLongs = polygons.Select(p => p.lat_long).ToList();
+                    var sectorObject = new
+                    {
+                        sec_id = sector.sec_id,
+                        sec_name = sector.sec_name,
+                        threshold = sector.threshold,
+                        description = sector.description,
+                        latLongs = latLongs,
+                        total_cases = numCases
+                    };
+
+                    sectorData.Add(sectorObject);
+                }
+                // Return the sector data as a JSON object
+                return Request.CreateResponse(HttpStatusCode.OK, sectorData);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
+
+
+
+        [HttpGet]
+        public HttpResponseMessage GetAllSectors3(int tilldays)
+        {
+            try
+            {
+                // Retrieve all sectors from the database
+                var sectors = db.SECTORS.ToList();
+                // Create a list to store the sector data as JSON objects
+                var sectorData = new List<object>();
+                var minimumDate = DateTime.Today.AddDays(-tilldays);
+
+                // Loop through each sector and extract the necessary data
+                foreach (var sector in sectors)
+                {
+                    int count = 0;
+
+                    // Get the user IDs in the current sector
+                    var userIDsInSector = db.USERs.Where(u => u.sec_id == sector.sec_id && u.role == "user")
+                                                  .Select(u => u.user_id)
+                                                  .ToList();
+
+                    // Get the case logs for the users in the current sector
+                    var caseLogs = db.CASES_LOGS.Where(c => userIDsInSector.Contains(c.user_id ?? 0) &&
+                                    DbFunctions.TruncateTime(c.startdate) >= minimumDate.Date &&
+                                    DbFunctions.TruncateTime(c.startdate) <= DateTime.Today);
+
+                    // Count the number of case logs in the current sector
+                    count = caseLogs.Count();
+
+                    var polygons = db.POLYGONS.Where(p => p.sec_id == sector.sec_id).Select(p => p.lat_long).ToList();
+
+                    var sectorObject = new
+                    {
+                        sec_id = sector.sec_id,
+                        sec_name = sector.sec_name,
+                        threshold = sector.threshold,
+                        description = sector.description,
+                        latLongs = polygons,
+                        total_cases = count
+                    };
+                    sectorData.Add(sectorObject);
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, sectorData);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
+
+        /*  Fix errors
+           i want to get total count of dengue cases in each sector
+          please rewrite the api code to get required data
+          api response should be same*/
+
+        [HttpGet]
+        public HttpResponseMessage GetAllSectors()
+        {
+            try
+            {
+                // Retrieve all sectors from the database
+                var sectors = db.SECTORS.ToList();
+
+                // Create a list to store the sector data as JSON objects
+                var sectorData = new List<object>();
+
+                // Loop through each sector and extract the necessary data
+                foreach (var sector in sectors)
+                {
+                    // Get the users in the current sector
+                    var usersInSector = db.USERs.Where(u => u.sec_id == sector.sec_id && u.role == "user");
+
+                    // Get the case logs for the users in the current sector
+                    //var caseLogs = db.CASES_LOGS.Where(c => usersInSector.Any(u => u.user_id == c.user_id) && c.status == true);
+                    var caseLogs = db.CASES_LOGS.Where(c => usersInSector.Any(u => u.user_id == c.user_id));
+
+
+                    // Count the number of case logs in the current sector
+                    var numCases = caseLogs.Count();
+
+                    var polygons = db.POLYGONS.Where(p => p.sec_id == sector.sec_id).ToList();
+
+                    var latLongs = polygons.Select(p => p.lat_long).ToList();
+
+                    var sectorObject = new
+                    {
+                        sec_id = sector.sec_id,
+                        sec_name = sector.sec_name,
+                        threshold = sector.threshold,
+                        description = sector.description,
+                        latLongs = latLongs,
+                        total_cases = numCases
+                    };
+
+                    sectorData.Add(sectorObject);
+                }
+
+                // Return the sector data as a JSON object
+                return Request.CreateResponse(HttpStatusCode.OK, sectorData);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
         //----------------------------------------------------------------------------//
 
 
@@ -2194,56 +2630,6 @@ namespace FYP_Api.Controllers
 
 
 
-        [HttpGet]
-        public HttpResponseMessage GetAllSectors()
-        {
-            try
-            {
-                // Retrieve all sectors from the database
-                var sectors = db.SECTORS.ToList();
-
-                // Create a list to store the sector data as JSON objects
-                var sectorData = new List<object>();
-
-                // Loop through each sector and extract the necessary data
-                foreach (var sector in sectors)
-                {
-                    // Get the users in the current sector
-                    var usersInSector = db.USERs.Where(u => u.sec_id == sector.sec_id && u.role == "user");
-
-                    // Get the case logs for the users in the current sector
-                    //var caseLogs = db.CASES_LOGS.Where(c => usersInSector.Any(u => u.user_id == c.user_id) && c.status == true);
-                    var caseLogs = db.CASES_LOGS.Where(c => usersInSector.Any(u => u.user_id == c.user_id));
-
-
-                    // Count the number of case logs in the current sector
-                    var numCases = caseLogs.Count();
-
-                    var polygons = db.POLYGONS.Where(p => p.sec_id == sector.sec_id).ToList();
-
-                    var latLongs = polygons.Select(p => p.lat_long).ToList();
-
-                    var sectorObject = new
-                    {
-                        sec_id = sector.sec_id,
-                        sec_name = sector.sec_name,
-                        threshold = sector.threshold,
-                        description = sector.description,
-                        latLongs = latLongs,
-                        total_cases = numCases
-                    };
-
-                    sectorData.Add(sectorObject);
-                }
-
-                // Return the sector data as a JSON object
-                return Request.CreateResponse(HttpStatusCode.OK, sectorData);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
 
 
         //----------------------------------------------------------------------------//
@@ -2352,6 +2738,46 @@ namespace FYP_Api.Controllers
             }
         }
 
+
+        public HttpResponseMessage GetOfficerSectorUsers()
+        {
+            try
+            {
+                var lst = db.USERs.Where(u => u.role == "officer");
+                var result = from u in lst
+                             join a in db.ASSIGNSECTORS on u.user_id equals a.user_id
+                             join s in db.SECTORS on a.sec_id equals s.sec_id
+                             let sector_users = db.USERs.Where(us => us.sec_id == s.sec_id)
+                             let sector_cases = db.CASES_LOGS.Where(c => sector_users.Any(us => us.user_id == c.user_id))
+                             let dengue_users = sector_cases.Where(c => c.status == true).Select(c => c.user_id).Distinct().Count()
+                             select new
+                             {
+                                 u.user_id,
+                                 u.name,
+                                 u.email,
+                                 u.phone_number,
+                                 u.role,
+                                 u.home_location,
+                                 u.office_location,
+                                 sector = new
+                                 {
+                                     s.sec_id,
+                                     s.sec_name,
+                                     s.threshold,
+                                     s.description,
+                                     latLongs = db.POLYGONS.Where(p => p.sec_id == s.sec_id).Select(p => p.lat_long).ToList(),
+                                     total_cases = sector_cases.Count(),
+                                     dengue_users
+                                 }
+                             };
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
 
         //----------------------------------------------------------------------------//
 
